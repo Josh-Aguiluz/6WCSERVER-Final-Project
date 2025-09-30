@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 
-/* :root {
+:root {
+  /* Existing styles for the default setup (Vite/React template) */
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -16,6 +17,16 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
+  /* ---------------------------------------------------------------- */
+  /* --- NEW HAU ECO-QUEST CSS VARIABLES (Theming) --- */
+  /* ---------------------------------------------------------------- */
+  --color-primary-green: #10b981; /* Default Tailwind green-500 for buttons/links */
+  --color-secondary-green: #059669; /* Default Tailwind green-600 */
+  --color-dark-green: #14532d; /* Default Tailwind green-900 (Used in Hero text) */
+  --color-footer-green: #047857; /* Default Tailwind green-700 (Used for footer) */
+  --color-background: #fdfbf6; /* Corresponds to bg-[#fdfbf6] */
+  --color-accent-orange: #f97316; /* Default Tailwind orange-500 (Used for events) */
 }
 
 a {
@@ -29,6 +40,7 @@ a:hover {
 
 body {
   margin: 0;
+  background-color: var(--color-background); 
   display: flex;
   place-items: center;
   min-width: 320px;
@@ -70,4 +82,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-} */
+}
