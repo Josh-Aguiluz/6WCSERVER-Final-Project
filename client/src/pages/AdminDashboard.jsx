@@ -55,29 +55,45 @@ const TabButton = ({ id, label, icon, activeTab, setActiveTab }) => (
 const SimpleBarChart = ({ data, title, color = 'green' }) => {
     const maxValue = Math.max(...data.map(item => item.value));
     const colorClasses = {
-        green: 'bg-green-500',
-        blue: 'bg-blue-500',
-        orange: 'bg-orange-500',
-        purple: 'bg-purple-500'
+        green: 'bg-gradient-to-r from-green-400 to-green-600',
+        blue: 'bg-gradient-to-r from-blue-400 to-blue-600',
+        orange: 'bg-gradient-to-r from-orange-400 to-orange-600',
+        purple: 'bg-gradient-to-r from-purple-400 to-purple-600'
     };
 
     return (
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300">
             <h3 className="text-lg font-bold text-gray-800 mb-4">{title}</h3>
             <div className="space-y-3">
                 {data.map((item, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                        <div className="w-20 text-sm font-semibold text-gray-700">{item.label}</div>
-                        <div className="flex-1 bg-gray-200 rounded-full h-4 relative overflow-hidden">
+                    <div key={index} className="flex items-center gap-3 group">
+                        <div className="w-20 text-sm font-semibold text-gray-700 transition-colors group-hover:text-gray-900">{item.label}</div>
+                        <div className="flex-1 bg-gray-100 rounded-full h-5 relative overflow-hidden shadow-inner">
                             <div 
-                                className={`h-full ${colorClasses[color]} rounded-full transition-all duration-500`}
-                                style={{ width: `${(item.value / maxValue) * 100}%` }}
+                                className={`h-full ${colorClasses[color]} rounded-full transition-all duration-700 ease-out hover:shadow-lg transform hover:scale-y-110 origin-left`}
+                                style={{ 
+                                    width: `${(item.value / maxValue) * 100}%`,
+                                    animationDelay: `${index * 100}ms`,
+                                    animation: 'slideInFromLeft 0.8s ease-out forwards'
+                                }}
                             ></div>
                         </div>
-                        <div className="w-12 text-sm font-bold text-gray-800">{item.value}</div>
+                        <div className="w-12 text-sm font-bold text-gray-800 transition-all group-hover:text-gray-900">{item.value}</div>
                     </div>
                 ))}
             </div>
+            <style jsx>{`
+                @keyframes slideInFromLeft {
+                    from {
+                        width: 0%;
+                        opacity: 0;
+                    }
+                    to {
+                        width: var(--final-width);
+                        opacity: 1;
+                    }
+                }
+            `}</style>
         </div>
     );
 };
@@ -142,11 +158,11 @@ const DonutChart = ({ data, title, size = 120 }) => {
     const colors = ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4'];
     
     return (
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300">
             <h3 className="text-lg font-bold text-gray-800 mb-4">{title}</h3>
             <div className="flex items-center gap-6">
-                <div className="relative" style={{ width: size, height: size }}>
-                    <svg width={size} height={size} className="transform -rotate-90">
+                <div className="relative group" style={{ width: size, height: size }}>
+                    <svg width={size} height={size} className="transform -rotate-90 transition-transform duration-300 group-hover:scale-105">
                         {data.map((item, index) => {
                             const percentage = (item.value / total) * 100;
                             const circumference = 2 * Math.PI * 45;
@@ -166,31 +182,45 @@ const DonutChart = ({ data, title, size = 120 }) => {
                                     strokeWidth="20"
                                     strokeDasharray={strokeDasharray}
                                     strokeDashoffset={strokeDashoffset}
-                                    className="transition-all duration-500"
+                                    className="transition-all duration-700 ease-out hover:stroke-width-24"
+                                    style={{
+                                        animationDelay: `${index * 200}ms`,
+                                        animation: 'drawCircle 1s ease-out forwards'
+                                    }}
                                 />
                             );
                         })}
                     </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="absolute inset-0 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-gray-800">{total}</div>
+                            <div className="text-2xl font-bold text-gray-800 transition-colors group-hover:text-blue-600">{total}</div>
                             <div className="text-xs text-gray-500">Total</div>
                         </div>
                     </div>
                 </div>
                 <div className="space-y-2">
                     {data.map((item, index) => (
-                        <div key={index} className="flex items-center gap-2">
+                        <div key={index} className="flex items-center gap-2 group hover:bg-gray-50 p-2 rounded-lg transition-all duration-200">
                             <div 
-                                className="w-3 h-3 rounded-full" 
+                                className="w-3 h-3 rounded-full transition-all duration-200 group-hover:scale-125 shadow-sm" 
                                 style={{ backgroundColor: colors[index % colors.length] }}
                             ></div>
-                            <span className="text-sm text-gray-700">{item.label}</span>
-                            <span className="text-sm font-semibold text-gray-800">{item.value}</span>
+                            <span className="text-sm text-gray-700 transition-colors group-hover:text-gray-900">{item.label}</span>
+                            <span className="text-sm font-semibold text-gray-800 transition-colors group-hover:text-blue-600">{item.value}</span>
                         </div>
                     ))}
                 </div>
             </div>
+            <style jsx>{`
+                @keyframes drawCircle {
+                    from {
+                        stroke-dashoffset: 283;
+                    }
+                    to {
+                        stroke-dashoffset: var(--final-offset);
+                    }
+                }
+            `}</style>
         </div>
     );
 };
@@ -415,6 +445,22 @@ const OverviewTab = ({ stats, setActiveTab }) => (
 const UserProfileModal = ({ user, onClose }) => {
     if (!user) return null;
 
+    const getRoleIcon = (role) => {
+        switch (role) {
+            case 'admin': return <Shield className="w-5 h-5 text-red-600" />;
+            case 'partner': return <Users className="w-5 h-5 text-purple-600" />;
+            default: return <Users className="w-5 h-5 text-blue-600" />;
+        }
+    };
+
+    const getRoleColor = (role) => {
+        switch (role) {
+            case 'admin': return 'from-red-400 to-red-600';
+            case 'partner': return 'from-purple-400 to-purple-600';
+            default: return 'from-blue-400 to-blue-600';
+        }
+    };
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -427,67 +473,91 @@ const UserProfileModal = ({ user, onClose }) => {
 
                 <div className="p-6 space-y-6">
                     <div className="text-center">
-                        <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Users className="w-10 h-10 text-white" />
+                        <div className={`w-20 h-20 bg-gradient-to-br ${getRoleColor(user.role)} rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+                            {getRoleIcon(user.role)}
                         </div>
                         <h4 className="text-2xl font-bold">{user.username}</h4>
                         <p className="text-gray-500">{user.email}</p>
-                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-2 ${user.role === 'partner'
-                                ? 'bg-purple-100 text-purple-700'
-                                : user.role === 'admin'
-                                    ? 'bg-red-100 text-red-700'
-                                    : 'bg-blue-100 text-blue-700'
-                            }`}>
-                            {user.role}
-                        </span>
+                        <div className="flex items-center justify-center gap-2 mt-2">
+                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${user.role === 'partner'
+                                    ? 'bg-purple-100 text-purple-700'
+                                    : user.role === 'admin'
+                                        ? 'bg-red-100 text-red-700'
+                                        : 'bg-blue-100 text-blue-700'
+                                }`}>
+                                {user.role}
+                            </span>
+                            {user.requested_role && !user.is_approved && (
+                                <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">
+                                    Pending {user.requested_role}
+                                </span>
+                            )}
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                            <h5 className="font-semibold text-sm text-gray-600 mb-1">Eco Score</h5>
+                        <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border border-green-200 hover:shadow-md transition-all">
+                            <div className="flex items-center gap-2 mb-1">
+                                <Award className="w-4 h-4 text-green-600" />
+                                <h5 className="font-semibold text-sm text-green-700">Eco Score</h5>
+                            </div>
                             <p className="text-2xl font-bold text-green-600">{user.eco_score || 0}</p>
                         </div>
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                            <h5 className="font-semibold text-sm text-gray-600 mb-1">Points</h5>
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200 hover:shadow-md transition-all">
+                            <div className="flex items-center gap-2 mb-1">
+                                <Award className="w-4 h-4 text-blue-600" />
+                                <h5 className="font-semibold text-sm text-blue-700">Points</h5>
+                            </div>
                             <p className="text-2xl font-bold text-blue-600">{user.points || 0}</p>
                         </div>
                     </div>
 
                     <div className="space-y-4">
-                        <div>
-                            <h5 className="font-semibold text-sm text-gray-600 mb-2">Profile Information</h5>
-                            <div className="space-y-2">
-                                <div className="flex justify-between">
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <h5 className="font-semibold text-sm text-gray-600 mb-3 flex items-center gap-2">
+                                <Users className="w-4 h-4" />
+                                Profile Information
+                            </h5>
+                            <div className="space-y-3">
+                                <div className="flex justify-between items-center p-2 hover:bg-white rounded-lg transition-colors">
                                     <span className="text-gray-600">HAU Affiliation:</span>
-                                    <span className="font-semibold">{user.hau_affiliation || 'Not specified'}</span>
+                                    <span className="font-semibold text-gray-800">{user.hau_affiliation || 'Not specified'}</span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between items-center p-2 hover:bg-white rounded-lg transition-colors">
                                     <span className="text-gray-600">Avatar Theme:</span>
-                                    <span className="font-semibold">{user.avatar_theme || 'Default'}</span>
+                                    <span className="font-semibold text-gray-800">{user.avatar_theme || 'Default'}</span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between items-center p-2 hover:bg-white rounded-lg transition-colors">
                                     <span className="text-gray-600">Header Theme:</span>
-                                    <span className="font-semibold">{user.header_theme || 'Default'}</span>
+                                    <span className="font-semibold text-gray-800">{user.header_theme || 'Default'}</span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between items-center p-2 hover:bg-white rounded-lg transition-colors">
                                     <span className="text-gray-600">Approval Status:</span>
-                                    <span className={`font-semibold ${user.is_approved ? 'text-green-600' : 'text-yellow-600'}`}>
+                                    <span className={`font-semibold flex items-center gap-1 ${user.is_approved ? 'text-green-600' : 'text-yellow-600'}`}>
+                                        {user.is_approved ? <CheckCircle className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
                                         {user.is_approved ? 'Approved' : 'Pending'}
                                     </span>
                                 </div>
                             </div>
                         </div>
 
-                        <div>
-                            <h5 className="font-semibold text-sm text-gray-600 mb-2">Activity</h5>
-                            <div className="space-y-2">
-                                <div className="flex justify-between">
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <h5 className="font-semibold text-sm text-gray-600 mb-3 flex items-center gap-2">
+                                <Activity className="w-4 h-4" />
+                                Activity
+                            </h5>
+                            <div className="space-y-3">
+                                <div className="flex justify-between items-center p-2 hover:bg-white rounded-lg transition-colors">
                                     <span className="text-gray-600">Quests Completed:</span>
-                                    <span className="font-semibold">{user.questsCompleted?.length || 0}</span>
+                                    <span className="font-semibold text-gray-800">{user.questsCompleted?.length || 0}</span>
                                 </div>
-                                <div className="flex justify-between">
+                                <div className="flex justify-between items-center p-2 hover:bg-white rounded-lg transition-colors">
                                     <span className="text-gray-600">Member Since:</span>
-                                    <span className="font-semibold">{new Date(user.created_at).toLocaleDateString()}</span>
+                                    <span className="font-semibold text-gray-800">{new Date(user.created_at).toLocaleDateString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center p-2 hover:bg-white rounded-lg transition-colors">
+                                    <span className="text-gray-600">Last Active:</span>
+                                    <span className="font-semibold text-gray-800">{user.updated_at ? new Date(user.updated_at).toLocaleDateString() : 'Unknown'}</span>
                                 </div>
                             </div>
                         </div>
@@ -2095,8 +2165,10 @@ const SubmissionsTab = ({ onApprove, onReject }) => {
     };
 
     const handleApprove = async (submissionId) => {
+        console.log('🚀 FRONTEND: handleApprove called with submissionId:', submissionId);
         try {
             const token = localStorage.getItem('token');
+            console.log('🚀 FRONTEND: Making API call to approve submission:', submissionId);
             const response = await fetch(`/api/quests/submissions/${submissionId}/review`, {
                 method: 'PUT',
                 headers: {
@@ -2105,6 +2177,7 @@ const SubmissionsTab = ({ onApprove, onReject }) => {
                 },
                 body: JSON.stringify({ status: 'approved' })
             });
+            console.log('🚀 FRONTEND: API response status:', response.status);
 
             if (response.ok) {
                 fetchSubmissions();
@@ -2169,47 +2242,47 @@ const SubmissionsTab = ({ onApprove, onReject }) => {
         <div className="space-y-6">
             {/* Submission Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 group">
                     <div className="flex items-center gap-3">
-                        <div className="p-3 bg-yellow-100 rounded-lg">
+                        <div className="p-3 bg-yellow-100 rounded-lg group-hover:scale-110 transition-transform duration-300">
                             <Clock className="w-6 h-6 text-yellow-600" />
                         </div>
                         <div>
                             <h3 className="text-lg font-bold">Pending</h3>
-                            <p className="text-2xl font-bold text-yellow-600">{submissions.filter(s => s.status === 'pending').length}</p>
+                            <p className="text-2xl font-bold text-yellow-600 group-hover:text-yellow-700 transition-colors">{submissions.filter(s => s.status === 'pending').length}</p>
                         </div>
                     </div>
                 </div>
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 group">
                     <div className="flex items-center gap-3">
-                        <div className="p-3 bg-green-100 rounded-lg">
+                        <div className="p-3 bg-green-100 rounded-lg group-hover:scale-110 transition-transform duration-300">
                             <CheckCircle className="w-6 h-6 text-green-600" />
                         </div>
                         <div>
                             <h3 className="text-lg font-bold">Approved</h3>
-                            <p className="text-2xl font-bold text-green-600">{submissions.filter(s => s.status === 'approved').length}</p>
+                            <p className="text-2xl font-bold text-green-600 group-hover:text-green-700 transition-colors">{submissions.filter(s => s.status === 'approved').length}</p>
                         </div>
                     </div>
                 </div>
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 group">
                     <div className="flex items-center gap-3">
-                        <div className="p-3 bg-red-100 rounded-lg">
+                        <div className="p-3 bg-red-100 rounded-lg group-hover:scale-110 transition-transform duration-300">
                             <XCircle className="w-6 h-6 text-red-600" />
                         </div>
                         <div>
                             <h3 className="text-lg font-bold">Rejected</h3>
-                            <p className="text-2xl font-bold text-red-600">{submissions.filter(s => s.status === 'rejected').length}</p>
+                            <p className="text-2xl font-bold text-red-600 group-hover:text-red-700 transition-colors">{submissions.filter(s => s.status === 'rejected').length}</p>
                         </div>
                     </div>
                 </div>
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 group">
                     <div className="flex items-center gap-3">
-                        <div className="p-3 bg-blue-100 rounded-lg">
+                        <div className="p-3 bg-blue-100 rounded-lg group-hover:scale-110 transition-transform duration-300">
                             <FileCheck className="w-6 h-6 text-blue-600" />
                         </div>
                         <div>
                             <h3 className="text-lg font-bold">Total</h3>
-                            <p className="text-2xl font-bold text-blue-600">{submissions.length}</p>
+                            <p className="text-2xl font-bold text-blue-600 group-hover:text-blue-700 transition-colors">{submissions.length}</p>
                         </div>
                     </div>
                 </div>
@@ -2319,7 +2392,12 @@ const SubmissionsTab = ({ onApprove, onReject }) => {
                                         {submission.status === 'pending' && (
                                             <>
                                                 <button
-                                                    onClick={() => handleApprove(submission._id)}
+                                                    onClick={(e) => {
+                                                        console.log('🚀 BUTTON CLICKED: Approve button clicked for submission:', submission._id);
+                                                        console.log('🚀 BUTTON CLICKED: Submission status:', submission.status);
+                                                        console.log('🚀 BUTTON CLICKED: Event:', e);
+                                                        handleApprove(submission._id);
+                                                    }}
                                                     className="p-2 hover:bg-green-50 hover:shadow-md rounded-lg transition-all duration-200 border border-green-200 hover:border-green-400 transform hover:scale-105"
                                                     title="Approve"
                                                 >
@@ -2398,7 +2476,12 @@ const SubmissionsTab = ({ onApprove, onReject }) => {
                             {selectedSubmission.status === 'pending' && (
                                 <div className="flex gap-3 pt-4 border-t">
                                     <button
-                                        onClick={() => handleApprove(selectedSubmission._id)}
+                                        onClick={(e) => {
+                                            console.log('🚀 MODAL BUTTON CLICKED: Approve button clicked for submission:', selectedSubmission._id);
+                                            console.log('🚀 MODAL BUTTON CLICKED: Submission status:', selectedSubmission.status);
+                                            console.log('🚀 MODAL BUTTON CLICKED: Event:', e);
+                                            handleApprove(selectedSubmission._id);
+                                        }}
                                         className="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition font-semibold flex items-center justify-center gap-2"
                                     >
                                         <CheckCircle className="w-5 h-5" />
@@ -2922,6 +3005,7 @@ const AdminDashboard = () => {
                     <TabButton id="quests" label="Quests" icon={<BookOpen className="w-4 h-4" />} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="community" label="Community" icon={<FileText className="w-4 h-4" />} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="submissions" label="Submissions" icon={<FileCheck className="w-4 h-4" />} activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <TabButton id="daily" label="Daily" icon={<Calendar className="w-4 h-4" />} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="notifications" label="Notifications" icon={<Users className="w-4 h-4" />} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="analytics" label="Analytics" icon={<BarChart className="w-4 h-4" />} activeTab={activeTab} setActiveTab={setActiveTab} />
                 </div>
@@ -2932,6 +3016,7 @@ const AdminDashboard = () => {
                 {activeTab === 'quests' && <QuestsTab quests={quests} setQuests={setQuests} />}
                 {activeTab === 'community' && <CommunityTab posts={posts} setPosts={setPosts} />}
                 {activeTab === 'submissions' && <SubmissionsTab />}
+                {activeTab === 'daily' && <DailyTab />}
                 {activeTab === 'notifications' && <NotificationsTab />}
                 {activeTab === 'analytics' && <AnalyticsTab stats={stats} users={users} quests={quests} />}
             </main>

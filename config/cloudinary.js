@@ -1,10 +1,18 @@
 const cloudinary = require('cloudinary').v2;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
 // Debug logging
 console.log('🔧 Loading Cloudinary configuration...');
 console.log('CLOUDINARY_URL:', process.env.CLOUDINARY_URL ? 'Set' : 'Not set');
 console.log('CLOUDINARY_CLOUD_NAME:', process.env.CLOUDINARY_CLOUD_NAME ? 'Set' : 'Not set');
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
 // Configure Cloudinary - prioritize CLOUDINARY_URL if available
 if (process.env.CLOUDINARY_URL) {
   console.log('✅ Using CLOUDINARY_URL for configuration');
@@ -19,5 +27,16 @@ if (process.env.CLOUDINARY_URL) {
   });
 }
 
+<<<<<<< HEAD
 console.log('✅ Cloudinary configuration loaded successfully');
 module.exports = cloudinary;
+=======
+
+console.log('✅ Cloudinary configuration loaded successfully');
+module.exports = cloudinary;
+
+
+
+
+
+>>>>>>> notifs_josh

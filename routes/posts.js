@@ -8,12 +8,20 @@ const path = require('path');
 const fs = require('fs');
 const { uploadToCloudinary, deleteFromCloudinary, extractPublicId } = require('../utils/cloudinaryUpload');
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
 // Create uploads directory if it doesn't exist
 const uploadDir = 'uploads';
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
 // Configure multer for memory storage (for Cloudinary uploads)
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -23,6 +31,7 @@ const upload = multer({
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
 
+
     if (mimetype && extname) {
       return cb(null, true);
     } else {
@@ -30,6 +39,7 @@ const upload = multer({
     }
   }
 });
+
 
 // Error handling middleware for multer
 const handleUploadError = (err, req, res, next) => {
@@ -43,6 +53,7 @@ const handleUploadError = (err, req, res, next) => {
   next(err);
 };
 
+
 // @route   GET /api/posts
 // @desc    Get all posts
 // @access  Public
@@ -51,10 +62,12 @@ router.get('/', async (req, res) => {
     const { category, limit = 50 } = req.query;
     const filter = category ? { category } : {};
 
+
     const posts = await Post.find(filter)
       .populate('author', 'username role')
       .sort({ created_at: -1 })
       .limit(parseInt(limit));
+
 
     res.json(posts);
   } catch (err) {
@@ -62,6 +75,7 @@ router.get('/', async (req, res) => {
     res.status(500).json({ msg: 'Server error' });
   }
 });
+
 
 // @route   GET /api/posts/:id
 // @desc    Get post by ID
@@ -72,13 +86,16 @@ router.get('/:id', async (req, res) => {
       .populate('author', 'username role avatar_theme')
       .populate('comments.user', 'username avatar_theme');
 
+
     if (!post) {
       return res.status(404).json({ msg: 'Post not found' });
     }
 
+
     // Increment views
     post.views += 1;
     await post.save();
+
 
     res.json(post);
   } catch (err) {
@@ -90,6 +107,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+
 // @route   POST /api/posts
 // @desc    Create a new post (All users can post)
 // @access  Private
@@ -100,7 +118,9 @@ router.post('/', auth, upload.single('image'), handleUploadError, async (req, re
       return res.status(400).json({ msg: req.fileValidationError });
     }
 
+
     const { title, content, category, tags, image_url } = req.body;
+
 
     // Handle tags - they might come as string or array
     let processedTags = [];
@@ -116,6 +136,10 @@ router.post('/', auth, upload.single('image'), handleUploadError, async (req, re
       }
     }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
     let imageUrl = null;
     if (req.file) {
       try {
@@ -130,6 +154,10 @@ router.post('/', auth, upload.single('image'), handleUploadError, async (req, re
       imageUrl = image_url;
     }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
     const post = new Post({
       title,
       content,
@@ -139,10 +167,13 @@ router.post('/', auth, upload.single('image'), handleUploadError, async (req, re
       image_url: imageUrl
     });
 
+
     await post.save();
+
 
     const populatedPost = await Post.findById(post._id)
       .populate('author', 'username role');
+
 
     res.json(populatedPost);
   } catch (err) {
@@ -151,6 +182,7 @@ router.post('/', auth, upload.single('image'), handleUploadError, async (req, re
   }
 });
 
+
 // @route   PUT /api/posts/:id
 // @desc    Update a post
 // @access  Private (Author or Admin only)
@@ -158,16 +190,20 @@ router.put('/:id', auth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
 
+
     if (!post) {
       return res.status(404).json({ msg: 'Post not found' });
     }
+
 
     // Check if user is the author or admin
     if (post.author.toString() !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ msg: 'Not authorized to update this post' });
     }
 
+
     const { title, content, category, tags, image_url } = req.body;
+
 
     if (title) post.title = title;
     if (content) post.content = content;
@@ -176,10 +212,13 @@ router.put('/:id', auth, async (req, res) => {
     if (image_url !== undefined) post.image_url = image_url || null;
     post.updated_at = Date.now();
 
+
     await post.save();
+
 
     const updatedPost = await Post.findById(post._id)
       .populate('author', 'username role');
+
 
     res.json(updatedPost);
   } catch (err) {
@@ -188,6 +227,7 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
+
 // @route   DELETE /api/posts/:id
 // @desc    Delete a post
 // @access  Private (Author or Admin only)
@@ -195,15 +235,21 @@ router.delete('/:id', auth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
 
+
     if (!post) {
       return res.status(404).json({ msg: 'Post not found' });
     }
+
 
     // Check if user is the author or admin
     if (post.author.toString() !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ msg: 'Not authorized to delete this post' });
     }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
     // Delete image from Cloudinary if it exists
     if (post.image_url) {
       try {
@@ -217,12 +263,18 @@ router.delete('/:id', auth, async (req, res) => {
       }
     }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
     // Log deletion reason if provided (for admin deletions)
     if (req.body.reason && req.user.role === 'admin') {
       console.log(`Post ${req.params.id} deleted by admin ${req.user.id}. Reason: ${req.body.reason}`);
     }
 
+
     await Post.findByIdAndDelete(req.params.id);
+
 
     res.json({ msg: 'Post removed' });
   } catch (err) {
@@ -231,6 +283,7 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
+
 // @route   POST /api/posts/:id/like
 // @desc    Like/Unlike a post
 // @access  Private
@@ -238,12 +291,15 @@ router.post('/:id/like', auth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
 
+
     if (!post) {
       return res.status(404).json({ msg: 'Post not found' });
     }
 
+
     // Check if already liked
     const likeIndex = post.likes.indexOf(req.user.id);
+
 
     if (likeIndex > -1) {
       // Unlike
@@ -253,6 +309,7 @@ router.post('/:id/like', auth, async (req, res) => {
       post.likes.push(req.user.id);
     }
 
+
     await post.save();
     res.json(post);
   } catch (err) {
@@ -261,6 +318,7 @@ router.post('/:id/like', auth, async (req, res) => {
   }
 });
 
+
 // @route   POST /api/posts/:id/comment
 // @desc    Add a comment to a post
 // @access  Private
@@ -268,26 +326,33 @@ router.post('/:id/comment', auth, async (req, res) => {
   try {
     const { text } = req.body;
 
+
     if (!text) {
       return res.status(400).json({ msg: 'Comment text is required' });
     }
 
+
     const post = await Post.findById(req.params.id);
+
 
     if (!post) {
       return res.status(404).json({ msg: 'Post not found' });
     }
+
 
     post.comments.push({
       user: req.user.id,
       text
     });
 
+
     await post.save();
+
 
     const updatedPost = await Post.findById(post._id)
       .populate('author', 'username role')
       .populate('comments.user', 'username avatar_theme');
+
 
     res.json(updatedPost);
   } catch (err) {
@@ -296,6 +361,7 @@ router.post('/:id/comment', auth, async (req, res) => {
   }
 });
 
+
 // @route   PUT /api/posts/:id/pin
 // @desc    Pin/unpin a post (Admin only)
 // @access  Private (Admin only)
@@ -303,20 +369,25 @@ router.put('/:id/pin', [auth, roleCheck('admin')], async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
 
+
     if (!post) {
       return res.status(404).json({ msg: 'Post not found' });
     }
+
 
     // Toggle pin status
     post.isPinned = !post.isPinned;
     post.pinnedBy = post.isPinned ? req.user.id : null;
     post.pinnedAt = post.isPinned ? new Date() : null;
 
+
     await post.save();
+
 
     const populatedPost = await Post.findById(post._id)
       .populate('author', 'username role')
       .populate('pinnedBy', 'username');
+
 
     res.json(populatedPost);
   } catch (err) {
@@ -325,5 +396,5 @@ router.put('/:id/pin', [auth, roleCheck('admin')], async (req, res) => {
   }
 });
 
-module.exports = router;
 
+module.exports = router;

@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const roleCheck = require('../middleware/roleCheck');
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 
 // @route   GET /api/admin/users
 // @desc    Get all users
@@ -87,6 +88,20 @@ router.put('/users/:id/approve', auth, roleCheck('admin'), async (req, res) => {
       requested_role: user.requested_role,
       is_approved: user.is_approved
     });
+
+    // Create notification for role approval
+    const notification = new Notification({
+      user_id: user._id,
+      type: 'role_approved',
+      title: 'Role application approved!',
+      message: `Your application to become a ${user.role} has been approved!`,
+      data: {
+        approvedRole: user.role,
+        approvedBy: req.user.id,
+        approvedByUsername: req.user.username
+      }
+    });
+    await notification.save();
 
     const updatedUser = await User.findById(req.params.id).select('-password');
     res.json({

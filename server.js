@@ -5,12 +5,18 @@ const cors = require('cors');
 const connectDB = require('./db');
 const path = require('path');
 const cloudinary = require('./config/cloudinary');
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
 
 // Connect to the database
 connectDB();
 
+
 const app = express();
 const PORT = process.env.PORT || 5000;
+
 
 // Enhanced CORS configuration
 app.use(cors({
@@ -18,9 +24,11 @@ app.use(cors({
   credentials: true
 }));
 
+
 // Body parser middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
 
 // Request logging middleware
 app.use((req, res, next) => {
@@ -34,15 +42,27 @@ app.use((req, res, next) => {
   next();
 });
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
 // Ensure uploads directory exists
 const fs = require('fs');
 const uploadsDir = path.join(__dirname, 'uploads');
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
 // Create uploads directory if it doesn't exist
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
   console.log(`📁 Created directory: ${uploadsDir}`);
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
 
 // Serve uploaded files statically from uploads directory
 app.use('/uploads', express.static('uploads', {
@@ -52,6 +72,7 @@ app.use('/uploads', express.static('uploads', {
     res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
   }
 }));
+
 
 // Define Routes with error handling
 try {
@@ -70,10 +91,15 @@ try {
   console.error('❌ Error loading routes:', error);
 }
 
+
 // Health check route
 app.get('/api/health', (req, res) => {
   const uploadsExists = fs.existsSync(uploadsDir);
   const uploadsFiles = fs.existsSync(uploadsDir) ? fs.readdirSync(uploadsDir).length : 0;
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
 
   res.json({
     status: 'ok',
@@ -88,6 +114,7 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+
 // Global error handler
 app.use((err, req, res, next) => {
   console.error('Global error handler:', err);
@@ -97,6 +124,7 @@ app.use((err, req, res, next) => {
     error: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
   });
 });
+
 
 // 404 handler for undefined routes
 app.use((req, res) => {
@@ -108,8 +136,12 @@ app.use((req, res) => {
   });
 });
 
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📡 Health check: http://localhost:${PORT}/api/health`);
   console.log(`🔐 Auth endpoints: http://localhost:${PORT}/api/auth/*`);
 });
+
+
+

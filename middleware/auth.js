@@ -20,8 +20,9 @@ module.exports = async function(req, res, next) {
     req.user = decoded.user;
     
     // Get user role for authorization
-    const user = await User.findById(req.user.id).select('role requested_role is_approved');
+    const user = await User.findById(req.user.id).select('username role requested_role is_approved');
     if (user) {
+      req.user.username = user.username;
       req.user.role = user.role;
       req.user.requested_role = user.requested_role;
       req.user.is_approved = user.is_approved;

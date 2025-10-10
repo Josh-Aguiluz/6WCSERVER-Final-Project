@@ -937,6 +937,7 @@ const ProgressTabContent = ({ dashboardData, userData, levelProgress }) => (
 // TabButton component
 const TabButton = ({ id, label, icon, activeTab, setActiveTab }) => (
     <button
+        data-tab={id}
         onClick={() => setActiveTab(id)}
         className={`flex items-center gap-2 px-4 py-2 rounded-full font-semibold transition-all duration-200 text-sm ${
             activeTab === id

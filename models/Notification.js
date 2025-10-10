@@ -17,10 +17,14 @@ const notificationSchema = new mongoose.Schema({
       'quest_created',
       'user_joined',
       'partner_approved',
+      'admin_approved',
       'submission_approved',
       'submission_rejected',
       'challenge_joined',
-      'challenge_completed'
+      'challenge_completed',
+      'post_liked',
+      'post_commented',
+      'role_approved'
     ]
   },
   title: {

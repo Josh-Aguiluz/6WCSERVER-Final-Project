@@ -431,7 +431,7 @@ const ProfilePage = ({ onPageChange, userId }) => {
                     userQuests.map((quest, index) => (
                       <div key={index} className="bg-white p-6 rounded-xl shadow-md border">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-bold text-lg">{quest.quest?.title || 'Quest Submission'}</h3>
+                          <h3 className="font-bold text-lg">{quest.quest_id?.title || 'Quest Submission'}</h3>
                           <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                             quest.status === 'approved' ? 'bg-green-100 text-green-700' :
                             quest.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
@@ -440,16 +440,16 @@ const ProfilePage = ({ onPageChange, userId }) => {
                             {quest.status}
                           </span>
                         </div>
-                        <p className="text-gray-600 mb-3">{quest.quest?.description || 'Quest description'}</p>
+                        <p className="text-gray-600 mb-3">{quest.quest_id?.description || quest.reflection_text || 'Quest description'}</p>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4 text-sm text-gray-500">
-                            <span>Submitted: {new Date(quest.submittedAt).toLocaleDateString()}</span>
-                            <span>{quest.quest?.points || 0} points</span>
-                            <span>Category: {quest.quest?.category || 'General'}</span>
-                            <span>Difficulty: {quest.quest?.difficulty || 'Medium'}</span>
+                            <span>Submitted: {new Date(quest.submitted_at).toLocaleDateString()}</span>
+                            <span>{quest.quest_id?.points || 0} points</span>
+                            <span>Category: {quest.quest_id?.category || 'General'}</span>
+                            <span>Difficulty: {quest.quest_id?.difficulty || 'Medium'}</span>
                           </div>
                           <button 
-                            onClick={() => onPageChange('quest-details', quest.quest?._id)}
+                            onClick={() => onPageChange('quest-details', quest.quest_id?._id)}
                             className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition text-sm font-semibold"
                           >
                             View Details

@@ -326,11 +326,42 @@ export const adminAPI = {
   },
 };
 
+// Notification APIs
+export const notificationAPI = {
+  getNotifications: async () => {
+    console.log('API: Getting notifications...');
+    const response = await fetch(`${API_URL}/notifications`, {
+      headers: getHeaders(),
+    });
+    console.log('API: Notifications response status:', response.status);
+    const result = await handleApiResponse(response);
+    console.log('API: Notifications result:', result);
+    return result;
+  },
+
+  markAsRead: async (notificationId) => {
+    const response = await fetch(`${API_URL}/notifications/${notificationId}/read`, {
+      method: 'PUT',
+      headers: getHeaders(),
+    });
+    return handleApiResponse(response);
+  },
+
+  markAllAsRead: async () => {
+    const response = await fetch(`${API_URL}/notifications/read-all`, {
+      method: 'PUT',
+      headers: getHeaders(),
+    });
+    return handleApiResponse(response);
+  },
+};
+
 export default {
   auth: authAPI,
   user: userAPI,
   quest: questAPI,
   post: postAPI,
   admin: adminAPI,
+  notification: notificationAPI,
 };
 

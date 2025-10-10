@@ -4,18 +4,63 @@ const auth = require('../middleware/auth');
 const Notification = require('../models/Notification');
 const User = require('../models/User');
 
+// Helper function to create notifications
+const createNotification = async (userId, type, title, message, data = {}) => {
+  try {
+    const notification = new Notification({
+      user_id: userId,
+      type,
+      title,
+      message,
+      data
+    });
+    await notification.save();
+    return notification;
+  } catch (error) {
+    console.error('Error creating notification:', error);
+    return null;
+  }
+};
+
+// Export the helper function for use in other routes
+router.createNotification = createNotification;
+
+// @route   POST /api/notifications/test
+// @desc    Create a test notification for debugging
+// @access  Private
+router.post('/test', auth, async (req, res) => {
+  try {
+    const testNotification = new Notification({
+      user_id: req.user.id,
+      type: 'quest_completed',
+      title: 'Test Notification',
+      message: 'This is a test notification to check if the system is working.',
+      data: { test: true }
+    });
+    
+    await testNotification.save();
+    console.log('Test notification created for user:', req.user.id);
+    res.json({ msg: 'Test notification created', notification: testNotification });
+  } catch (err) {
+    console.error('Error creating test notification:', err.message);
+    res.status(500).json({ msg: 'Server error' });
+  }
+});
+
 // @route   GET /api/notifications
 // @desc    Get notifications for current user
 // @access  Private
 router.get('/', auth, async (req, res) => {
   try {
+    console.log('Fetching notifications for user:', req.user.id);
     const notifications = await Notification.find({ user_id: req.user.id })
       .sort({ created_at: -1 })
       .limit(50);
     
+    console.log('Found notifications:', notifications.length);
     res.json(notifications);
   } catch (err) {
-    console.error(err.message);
+    console.error('Error fetching notifications:', err.message);
     res.status(500).json({ msg: 'Server error' });
   }
 });
@@ -79,23 +124,6 @@ router.delete('/:id', auth, async (req, res) => {
     res.status(500).json({ msg: 'Server error' });
   }
 });
-
-// Helper function to create notification
-const createNotification = async (userId, type, title, message, data = {}) => {
-  try {
-    const notification = new Notification({
-      user_id: userId,
-      type,
-      title,
-      message,
-      data
-    });
-    await notification.save();
-    return notification;
-  } catch (err) {
-    console.error('Error creating notification:', err);
-  }
-};
 
 module.exports = { router, createNotification };
 

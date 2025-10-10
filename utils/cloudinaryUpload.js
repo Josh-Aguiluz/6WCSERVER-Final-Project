@@ -2,6 +2,10 @@ const cloudinary = require('../config/cloudinary');
 const { Readable } = require('stream');
 const { smartCompressImage } = require('./imageCompression');
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
 // Convert buffer to stream for Cloudinary
 const bufferToStream = (buffer) => {
   const readable = new Readable();
@@ -11,6 +15,10 @@ const bufferToStream = (buffer) => {
   return readable;
 };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
 // Upload image to Cloudinary with compression
 const uploadToCloudinary = async (file, folder = 'hau-eco-quest') => {
   try {
@@ -21,8 +29,15 @@ const uploadToCloudinary = async (file, folder = 'hau-eco-quest') => {
       quality: 85
     });
 
+<<<<<<< HEAD
     console.log(`Image compressed: ${compressionResult.originalSize} -> ${compressionResult.compressedSize} bytes (${compressionResult.compressionRatio}% reduction)`);
 
+=======
+
+    console.log(`Image compressed: ${compressionResult.originalSize} -> ${compressionResult.compressedSize} bytes (${compressionResult.compressionRatio}% reduction)`);
+
+
+>>>>>>> notifs_josh
     const result = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
@@ -39,9 +54,17 @@ const uploadToCloudinary = async (file, folder = 'hau-eco-quest') => {
         }
       );
 
+<<<<<<< HEAD
       bufferToStream(compressionResult.buffer).pipe(uploadStream);
     });
 
+=======
+
+      bufferToStream(compressionResult.buffer).pipe(uploadStream);
+    });
+
+
+>>>>>>> notifs_josh
     return {
       public_id: result.public_id,
       secure_url: result.secure_url,
@@ -59,6 +82,10 @@ const uploadToCloudinary = async (file, folder = 'hau-eco-quest') => {
   }
 };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
 // Delete image from Cloudinary
 const deleteFromCloudinary = async (publicId) => {
   try {
@@ -70,6 +97,10 @@ const deleteFromCloudinary = async (publicId) => {
   }
 };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
 // Extract public ID from Cloudinary URL
 const extractPublicId = (url) => {
   if (!url) return null;
@@ -79,8 +110,20 @@ const extractPublicId = (url) => {
   return `hau-eco-quest/${publicId}`;
 };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifs_josh
 module.exports = {
   uploadToCloudinary,
   deleteFromCloudinary,
   extractPublicId
 };
+<<<<<<< HEAD
+=======
+
+
+
+
+
+>>>>>>> notifs_josh
