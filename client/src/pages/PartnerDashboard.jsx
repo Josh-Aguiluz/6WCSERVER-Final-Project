@@ -8,7 +8,9 @@ import {
     TrendingDown, Activity, Zap
 } from 'lucide-react';
 
+
 // --- HELPER COMPONENTS ---
+
 
 const StatCard = ({ icon, value, label, bgColor, trend }) => (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all">
@@ -22,6 +24,7 @@ const StatCard = ({ icon, value, label, bgColor, trend }) => (
         </div>
     </div>
 );
+
 
 const TabButton = ({ id, label, icon, activeTab, setActiveTab, badge }) => (
     <button
@@ -41,6 +44,7 @@ const TabButton = ({ id, label, icon, activeTab, setActiveTab, badge }) => (
     </button>
 );
 
+
 // --- CHART COMPONENTS ---
 const SimpleBarChart = ({ data, title, color = 'green' }) => {
     const maxValue = Math.max(...data.map(item => item.value));
@@ -50,6 +54,7 @@ const SimpleBarChart = ({ data, title, color = 'green' }) => {
         orange: 'bg-orange-500',
         purple: 'bg-purple-500'
     };
+
 
     return (
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -72,6 +77,7 @@ const SimpleBarChart = ({ data, title, color = 'green' }) => {
     );
 };
 
+
 const LineChart = ({ data, title, color = 'green' }) => {
     const maxValue = Math.max(...data.map(item => item.value));
     const minValue = Math.min(...data.map(item => item.value));
@@ -83,6 +89,7 @@ const LineChart = ({ data, title, color = 'green' }) => {
         orange: 'stroke-orange-500',
         purple: 'stroke-purple-500'
     };
+
 
     return (
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -124,6 +131,7 @@ const LineChart = ({ data, title, color = 'green' }) => {
         </div>
     );
 };
+
 
 const DonutChart = ({ data, title, size = 120 }) => {
     const total = data.reduce((sum, item) => sum + item.value, 0);
@@ -184,6 +192,7 @@ const DonutChart = ({ data, title, size = 120 }) => {
         </div>
     );
 };
+
 
 const GroupedBarChart = ({ data, title, categories, colors = ['#3B82F6', '#10B981'] }) => {
     const maxValue = Math.max(...data.flat().map(item => item.value));
@@ -286,6 +295,7 @@ const GroupedBarChart = ({ data, title, categories, colors = ['#3B82F6', '#10B98
     );
 };
 
+
 // --- QUEST FORM MODAL ---
 const QuestModal = ({ quest, onClose, onSave }) => {
     const [formData, setFormData] = useState(quest || {
@@ -303,6 +313,7 @@ const QuestModal = ({ quest, onClose, onSave }) => {
     const [previewUrl, setPreviewUrl] = useState(quest?.imageUrl || null);
     const [isUploading, setIsUploading] = useState(false);
 
+
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -313,10 +324,12 @@ const QuestModal = ({ quest, onClose, onSave }) => {
         }
     };
 
+
     const handleSubmit = (e) => {
         e.preventDefault();
         onSave({ ...formData, image: selectedFile });
     };
+
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -327,6 +340,7 @@ const QuestModal = ({ quest, onClose, onSave }) => {
                         <X className="w-5 h-5" />
                     </button>
                 </div>
+
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
                     <div>
@@ -340,6 +354,7 @@ const QuestModal = ({ quest, onClose, onSave }) => {
                             placeholder="e.g., Campus Tree Planting"
                         />
                     </div>
+
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -358,6 +373,7 @@ const QuestModal = ({ quest, onClose, onSave }) => {
                             </select>
                         </div>
 
+
                         <div>
                             <label className="block text-sm font-semibold mb-2">Difficulty</label>
                             <select
@@ -372,6 +388,7 @@ const QuestModal = ({ quest, onClose, onSave }) => {
                         </div>
                     </div>
 
+
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-semibold mb-2">Points Reward</label>
@@ -384,6 +401,7 @@ const QuestModal = ({ quest, onClose, onSave }) => {
                             />
                         </div>
 
+
                         <div>
                             <label className="block text-sm font-semibold mb-2">Max Participants</label>
                             <input
@@ -395,6 +413,7 @@ const QuestModal = ({ quest, onClose, onSave }) => {
                             />
                         </div>
                     </div>
+
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -409,6 +428,7 @@ const QuestModal = ({ quest, onClose, onSave }) => {
                             />
                         </div>
 
+
                         <div>
                             <label className="block text-sm font-semibold mb-2">Duration</label>
                             <input
@@ -422,6 +442,7 @@ const QuestModal = ({ quest, onClose, onSave }) => {
                         </div>
                     </div>
 
+
                     <div>
                         <label className="block text-sm font-semibold mb-2">Description</label>
                         <textarea
@@ -434,6 +455,7 @@ const QuestModal = ({ quest, onClose, onSave }) => {
                         />
                     </div>
 
+
                     <div>
                         <label className="block text-sm font-semibold mb-2">Requirements</label>
                         <textarea
@@ -444,6 +466,7 @@ const QuestModal = ({ quest, onClose, onSave }) => {
                             placeholder="List any requirements or materials needed..."
                         />
                     </div>
+
 
                     <div>
                         <label className="block text-sm font-semibold mb-2">Quest Image</label>
@@ -497,6 +520,7 @@ const QuestModal = ({ quest, onClose, onSave }) => {
                         )}
                     </div>
 
+
                     <div className="flex gap-3 pt-4">
                         <button
                             type="submit"
@@ -519,6 +543,7 @@ const QuestModal = ({ quest, onClose, onSave }) => {
     );
 };
 
+
 // --- COMMUNITY CHALLENGE MODAL ---
 const ChallengeModal = ({ challenge, onClose, onSave }) => {
     const [formData, setFormData] = useState(challenge || {
@@ -528,10 +553,12 @@ const ChallengeModal = ({ challenge, onClose, onSave }) => {
         category: 'Environmental'
     });
 
+
     const handleSubmit = (e) => {
         e.preventDefault();
         onSave(formData);
     };
+
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -542,6 +569,7 @@ const ChallengeModal = ({ challenge, onClose, onSave }) => {
                         <X className="w-5 h-5" />
                     </button>
                 </div>
+
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
                     <div>
@@ -556,6 +584,7 @@ const ChallengeModal = ({ challenge, onClose, onSave }) => {
                         />
                     </div>
 
+
                     <div>
                         <label className="block text-sm font-semibold mb-2">Description</label>
                         <textarea
@@ -567,6 +596,7 @@ const ChallengeModal = ({ challenge, onClose, onSave }) => {
                             placeholder="Describe the community challenge..."
                         />
                     </div>
+
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -580,6 +610,7 @@ const ChallengeModal = ({ challenge, onClose, onSave }) => {
                                 placeholder="1000"
                             />
                         </div>
+
 
                         <div>
                             <label className="block text-sm font-semibold mb-2">Category</label>
@@ -595,6 +626,7 @@ const ChallengeModal = ({ challenge, onClose, onSave }) => {
                             </select>
                         </div>
                     </div>
+
 
                     <div className="flex gap-3 pt-4">
                         <button
@@ -618,6 +650,7 @@ const ChallengeModal = ({ challenge, onClose, onSave }) => {
     );
 };
 
+
 // --- COMMUNITY POST MODAL ---
 const PostModal = ({ post, onClose, onSave }) => {
     const [formData, setFormData] = useState(post || {
@@ -630,6 +663,7 @@ const PostModal = ({ post, onClose, onSave }) => {
     const [previewUrl, setPreviewUrl] = useState(post?.image_url || null);
     const [isUploading, setIsUploading] = useState(false);
 
+
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -640,10 +674,12 @@ const PostModal = ({ post, onClose, onSave }) => {
         }
     };
 
+
     const handleSubmit = (e) => {
         e.preventDefault();
         onSave({ ...formData, image: selectedFile });
     };
+
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -654,6 +690,7 @@ const PostModal = ({ post, onClose, onSave }) => {
                         <X className="w-5 h-5" />
                     </button>
                 </div>
+
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
                     <div>
@@ -667,6 +704,7 @@ const PostModal = ({ post, onClose, onSave }) => {
                             placeholder="e.g., Tips for Sustainable Living"
                         />
                     </div>
+
 
                     <div>
                         <label className="block text-sm font-semibold mb-2">Category</label>
@@ -683,6 +721,7 @@ const PostModal = ({ post, onClose, onSave }) => {
                         </select>
                     </div>
 
+
                     <div>
                         <label className="block text-sm font-semibold mb-2">Content</label>
                         <textarea
@@ -695,6 +734,7 @@ const PostModal = ({ post, onClose, onSave }) => {
                         />
                     </div>
 
+
                     <div>
                         <label className="block text-sm font-semibold mb-2">Tags (comma-separated)</label>
                         <input
@@ -705,6 +745,7 @@ const PostModal = ({ post, onClose, onSave }) => {
                             placeholder="e.g., sustainability, recycling, climate"
                         />
                     </div>
+
 
                     <div>
                         <label className="block text-sm font-semibold mb-2">Post Image</label>
@@ -758,6 +799,7 @@ const PostModal = ({ post, onClose, onSave }) => {
                         )}
                     </div>
 
+
                     <div className="flex gap-3 pt-4">
                         <button
                             type="submit"
@@ -780,11 +822,13 @@ const PostModal = ({ post, onClose, onSave }) => {
     );
 };
 
+
 // --- OVERVIEW TAB ---
 const OverviewTab = ({ quests, posts, setActiveTab }) => {
     const activeQuests = quests.filter(q => q.isActive).length;
     const totalParticipants = quests.reduce((sum, q) => sum + (q.completions?.length || 0), 0);
     const totalPoints = quests.reduce((sum, q) => sum + q.points, 0);
+
 
     // Generate chart data from real quest data based on creation dates
     const getWeeklyActivity = (quests, isThisWeek = true) => {
@@ -816,8 +860,10 @@ const OverviewTab = ({ quests, posts, setActiveTab }) => {
         });
     };
 
+
     const weeklyProgressData = getWeeklyActivity(quests, true);
     const lastWeekData = getWeeklyActivity(quests, false);
+
 
     const categoryData = quests.reduce((acc, quest) => {
         const category = quest.category;
@@ -828,16 +874,19 @@ const OverviewTab = ({ quests, posts, setActiveTab }) => {
         return acc;
     }, {});
 
+
     const categoryChartData = Object.entries(categoryData).map(([label, value]) => ({
         label: label.split(' ')[0], // Shorten category names
         value
     }));
+
 
     const questStatusData = [
         { label: 'Active', value: activeQuests },
         { label: 'Completed', value: quests.filter(q => !q.isActive).length },
         { label: 'Draft', value: quests.filter(q => q.status === 'draft').length }
     ];
+
 
     return (
         <div className="space-y-8">
@@ -871,6 +920,7 @@ const OverviewTab = ({ quests, posts, setActiveTab }) => {
                 />
             </div>
 
+
             {/* Dashboard Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <GroupedBarChart 
@@ -884,6 +934,7 @@ const OverviewTab = ({ quests, posts, setActiveTab }) => {
                     title="Quest Status Distribution" 
                 />
             </div>
+
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -969,15 +1020,18 @@ const OverviewTab = ({ quests, posts, setActiveTab }) => {
     );
 };
 
+
 // --- QUESTS TAB ---
 const QuestsTab = ({ quests, setQuests }) => {
     const [showModal, setShowModal] = useState(false);
     const [editingQuest, setEditingQuest] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
 
+
     const handleSaveQuest = async (questData) => {
         try {
             const token = localStorage.getItem('token');
+
 
             // Use FormData if there's a photo, otherwise use JSON
             if (questData.photo) {
@@ -994,6 +1048,7 @@ const QuestsTab = ({ quests, setQuests }) => {
                 formData.append('maxParticipants', questData.maxParticipants);
                 formData.append('photo', questData.photo);
 
+
                 const response = await fetch('/api/quests', {
                     method: 'POST',
                     headers: {
@@ -1001,6 +1056,7 @@ const QuestsTab = ({ quests, setQuests }) => {
                     },
                     body: formData
                 });
+
 
                 if (!response.ok) throw new Error('Failed to create quest');
                 const newQuest = await response.json();
@@ -1019,6 +1075,7 @@ const QuestsTab = ({ quests, setQuests }) => {
                     maxParticipants: questData.maxParticipants
                 };
 
+
                 if (editingQuest) {
                     const response = await fetch(`/api/quests/${editingQuest._id}`, {
                         method: 'PUT',
@@ -1028,6 +1085,7 @@ const QuestsTab = ({ quests, setQuests }) => {
                         },
                         body: JSON.stringify(payload)
                     });
+
 
                     if (!response.ok) throw new Error('Failed to update quest');
                     const updatedQuest = await response.json();
@@ -1042,11 +1100,13 @@ const QuestsTab = ({ quests, setQuests }) => {
                         body: JSON.stringify(payload)
                     });
 
+
                     if (!response.ok) throw new Error('Failed to create quest');
                     const newQuest = await response.json();
                     setQuests([newQuest, ...quests]);
                 }
             }
+
 
             setShowModal(false);
             setEditingQuest(null);
@@ -1056,8 +1116,10 @@ const QuestsTab = ({ quests, setQuests }) => {
         }
     };
 
+
     const handleDeleteQuest = async (id) => {
         if (!confirm('Are you sure you want to delete this quest?')) return;
+
 
         try {
             const token = localStorage.getItem('token');
@@ -1068,6 +1130,7 @@ const QuestsTab = ({ quests, setQuests }) => {
                 }
             });
 
+
             if (!response.ok) throw new Error('Failed to delete quest');
             setQuests(quests.filter(q => q._id !== id));
         } catch (error) {
@@ -1076,9 +1139,11 @@ const QuestsTab = ({ quests, setQuests }) => {
         }
     };
 
+
     const filteredQuests = quests.filter(q =>
         q.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
 
     return (
         <div className="space-y-6">
@@ -1100,6 +1165,7 @@ const QuestsTab = ({ quests, setQuests }) => {
                     </button>
                 </div>
 
+
                 <div className="mb-4">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -1112,6 +1178,7 @@ const QuestsTab = ({ quests, setQuests }) => {
                         />
                     </div>
                 </div>
+
 
                 <div className="space-y-4">
                     {filteredQuests.length === 0 ? (
@@ -1189,6 +1256,7 @@ const QuestsTab = ({ quests, setQuests }) => {
                 </div>
             </div>
 
+
             {showModal && (
                 <QuestModal
                     quest={editingQuest}
@@ -1203,6 +1271,7 @@ const QuestsTab = ({ quests, setQuests }) => {
     );
 };
 
+
 // --- COMMUNITY TAB ---
 const CommunityTab = ({ posts, setPosts }) => {
     const [showModal, setShowModal] = useState(false);
@@ -1210,9 +1279,11 @@ const CommunityTab = ({ posts, setPosts }) => {
     const [editingPost, setEditingPost] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
 
+
     const handleSavePost = async (postData) => {
         try {
             const token = localStorage.getItem('token');
+
 
             if (editingPost) {
                 // For updates, use JSON for now
@@ -1223,6 +1294,7 @@ const CommunityTab = ({ posts, setPosts }) => {
                     tags: postData.tags.split(',').map(t => t.trim()).filter(t => t)
                 };
 
+
                 const response = await fetch(`/api/posts/${editingPost._id}`, {
                     method: 'PUT',
                     headers: {
@@ -1231,6 +1303,7 @@ const CommunityTab = ({ posts, setPosts }) => {
                     },
                     body: JSON.stringify(payload)
                 });
+
 
                 if (!response.ok) throw new Error('Failed to update post');
                 const updatedPost = await response.json();
@@ -1243,9 +1316,11 @@ const CommunityTab = ({ posts, setPosts }) => {
                 formData.append('category', postData.category);
                 formData.append('tags', JSON.stringify(postData.tags.split(',').map(t => t.trim()).filter(t => t)));
 
+
                 if (postData.image) {
                     formData.append('image', postData.image);
                 }
+
 
                 const response = await fetch('/api/posts', {
                     method: 'POST',
@@ -1255,6 +1330,7 @@ const CommunityTab = ({ posts, setPosts }) => {
                     body: formData
                 });
 
+
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(errorData.msg || 'Failed to create post');
@@ -1262,6 +1338,7 @@ const CommunityTab = ({ posts, setPosts }) => {
                 const newPost = await response.json();
                 setPosts([newPost, ...posts]);
             }
+
 
             setShowModal(false);
             setEditingPost(null);
@@ -1271,8 +1348,10 @@ const CommunityTab = ({ posts, setPosts }) => {
         }
     };
 
+
     const handleDeletePost = async (id) => {
         if (!confirm('Are you sure you want to delete this post?')) return;
+
 
         try {
             const token = localStorage.getItem('token');
@@ -1287,6 +1366,7 @@ const CommunityTab = ({ posts, setPosts }) => {
             console.error('Error deleting post:', error);
         }
     };
+
 
     const handleSaveChallenge = async (challengeData) => {
         try {
@@ -1305,6 +1385,7 @@ const CommunityTab = ({ posts, setPosts }) => {
                 })
             });
 
+
             if (!response.ok) throw new Error('Failed to create challenge');
             alert('Community challenge created successfully!');
             setShowChallengeModal(false);
@@ -1314,9 +1395,11 @@ const CommunityTab = ({ posts, setPosts }) => {
         }
     };
 
+
     const filteredPosts = posts.filter(p =>
         p.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
 
     return (
         <div className="space-y-6">
@@ -1347,6 +1430,7 @@ const CommunityTab = ({ posts, setPosts }) => {
                     </div>
                 </div>
 
+
                 <div className="mb-4">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -1359,6 +1443,7 @@ const CommunityTab = ({ posts, setPosts }) => {
                         />
                     </div>
                 </div>
+
 
                 <div className="space-y-4">
                     {filteredPosts.length === 0 ? (
@@ -1430,6 +1515,7 @@ const CommunityTab = ({ posts, setPosts }) => {
                 </div>
             </div>
 
+
             {showModal && (
                 <PostModal
                     post={editingPost}
@@ -1441,6 +1527,7 @@ const CommunityTab = ({ posts, setPosts }) => {
                 />
             )}
 
+
             {showChallengeModal && (
                 <ChallengeModal
                     onClose={() => setShowChallengeModal(false)}
@@ -1451,6 +1538,7 @@ const CommunityTab = ({ posts, setPosts }) => {
     );
 };
 
+
 // --- ANALYTICS TAB ---
 const AnalyticsTab = ({ quests }) => {
     const totalQuests = quests.length;
@@ -1459,16 +1547,19 @@ const AnalyticsTab = ({ quests }) => {
     const totalParticipants = quests.reduce((sum, q) => sum + (q.completions?.length || 0), 0);
     const avgParticipants = totalQuests > 0 ? Math.round(totalParticipants / totalQuests) : 0;
 
+
     const categoryStats = {};
     quests.forEach(q => {
         categoryStats[q.category] = (categoryStats[q.category] || 0) + 1;
     });
+
 
     // Generate chart data
     const categoryData = Object.entries(categoryStats).map(([label, value]) => ({
         label: label.split(' ')[0], // Shorten category names
         value
     }));
+
 
     // Generate chart data from real quest data based on creation dates
     const getWeeklyActivity = (quests, isThisWeek = true) => {
@@ -1500,14 +1591,17 @@ const AnalyticsTab = ({ quests }) => {
         });
     };
 
+
     const weeklyData = getWeeklyActivity(quests, true);
     const lastWeekData = getWeeklyActivity(quests, false);
+
 
     const questStatusData = [
         { label: 'Active', value: activeQuests },
         { label: 'Completed', value: completedQuests },
         { label: 'Draft', value: quests.filter(q => q.status === 'draft').length }
     ];
+
 
     return (
         <div className="space-y-8">
@@ -1524,6 +1618,7 @@ const AnalyticsTab = ({ quests }) => {
                     </p>
                 </div>
 
+
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <div className="flex items-center justify-between mb-2">
                         <p className="text-sm text-gray-500">Total Participants</p>
@@ -1534,6 +1629,7 @@ const AnalyticsTab = ({ quests }) => {
                         Avg {avgParticipants} per quest
                     </p>
                 </div>
+
 
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                     <div className="flex items-center justify-between mb-2">
@@ -1549,6 +1645,7 @@ const AnalyticsTab = ({ quests }) => {
                 </div>
             </div>
 
+
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <GroupedBarChart 
@@ -1562,6 +1659,7 @@ const AnalyticsTab = ({ quests }) => {
                     title="Quest Status Distribution" 
                 />
             </div>
+
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <SimpleBarChart 
@@ -1597,14 +1695,17 @@ const AnalyticsTab = ({ quests }) => {
     );
 };
 
+
 // --- NOTIFICATIONS TAB ---
 const NotificationsTab = () => {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
 
+
     useEffect(() => {
         fetchNotifications();
     }, []);
+
 
     const fetchNotifications = async () => {
         try {
@@ -1612,6 +1713,7 @@ const NotificationsTab = () => {
             const response = await fetch('/api/notifications', {
                 headers: { 'x-auth-token': token }
             });
+
 
             if (response.ok) {
                 const data = await response.json();
@@ -1623,6 +1725,7 @@ const NotificationsTab = () => {
             setLoading(false);
         }
     };
+
 
     const markAsRead = async (notificationId) => {
         try {
@@ -1637,6 +1740,7 @@ const NotificationsTab = () => {
         }
     };
 
+
     const deleteNotification = async (notificationId) => {
         try {
             const token = localStorage.getItem('token');
@@ -1650,6 +1754,7 @@ const NotificationsTab = () => {
         }
     };
 
+
     if (loading) {
         return (
             <div className="flex justify-center items-center py-12">
@@ -1657,6 +1762,7 @@ const NotificationsTab = () => {
             </div>
         );
     }
+
 
     return (
         <div className="space-y-6">
@@ -1676,6 +1782,7 @@ const NotificationsTab = () => {
                         Mark all as read
                     </button>
                 </div>
+
 
                 {notifications.length === 0 ? (
                     <div className="text-center py-12">
@@ -1724,6 +1831,7 @@ const NotificationsTab = () => {
     );
 };
 
+
 // --- DAILY MANAGEMENT TAB ---
 const DailyTab = () => {
     const [dailyQuest, setDailyQuest] = useState(null);
@@ -1732,9 +1840,11 @@ const DailyTab = () => {
     const [showChallengeModal, setShowChallengeModal] = useState(false);
     const [loading, setLoading] = useState(true);
 
+
     useEffect(() => {
         fetchDailyContent();
     }, []);
+
 
     const fetchDailyContent = async () => {
         try {
@@ -1743,10 +1853,12 @@ const DailyTab = () => {
             const questData = await questRes.json();
             setDailyQuest(questData.quest);
 
+
             // Fetch today's challenge
             const challengeRes = await fetch('/api/daily/challenge');
             const challengeData = await challengeRes.json();
             setDailyChallenge(challengeData.challenge);
+
 
             setLoading(false);
         } catch (error) {
@@ -1754,6 +1866,7 @@ const DailyTab = () => {
             setLoading(false);
         }
     };
+
 
     const handleCreateDailyQuest = async (questData) => {
         try {
@@ -1766,6 +1879,7 @@ const DailyTab = () => {
                 },
                 body: JSON.stringify(questData)
             });
+
 
             if (response.ok) {
                 const newQuest = await response.json();
@@ -1782,6 +1896,7 @@ const DailyTab = () => {
         }
     };
 
+
     const handleCreateDailyChallenge = async (challengeData) => {
         try {
             const token = localStorage.getItem('token');
@@ -1793,6 +1908,7 @@ const DailyTab = () => {
                 },
                 body: JSON.stringify(challengeData)
             });
+
 
             if (response.ok) {
                 const newChallenge = await response.json();
@@ -1809,6 +1925,7 @@ const DailyTab = () => {
         }
     };
 
+
     if (loading) {
         return (
             <div className="flex justify-center items-center py-12">
@@ -1816,6 +1933,7 @@ const DailyTab = () => {
             </div>
         );
     }
+
 
     return (
         <div className="space-y-8">
@@ -1833,6 +1951,7 @@ const DailyTab = () => {
                         </button>
                     )}
                 </div>
+
 
                 {dailyQuest ? (
                     <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -1852,6 +1971,7 @@ const DailyTab = () => {
                 )}
             </div>
 
+
             {/* Today's Community Challenge Section */}
             <div className="bg-white p-6 rounded-xl shadow-md border">
                 <div className="flex justify-between items-center mb-4">
@@ -1867,6 +1987,7 @@ const DailyTab = () => {
                     )}
                 </div>
 
+
                 {dailyChallenge ? (
                     <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
                         <h4 className="font-bold text-purple-800 mb-2">{dailyChallenge.title}</h4>
@@ -1880,6 +2001,7 @@ const DailyTab = () => {
                 )}
             </div>
 
+
             {/* Daily Quest Modal */}
             {showQuestModal && (
                 <QuestModal
@@ -1887,6 +2009,7 @@ const DailyTab = () => {
                     onSave={handleCreateDailyQuest}
                 />
             )}
+
 
             {/* Daily Challenge Modal */}
             {showChallengeModal && (
@@ -1899,18 +2022,22 @@ const DailyTab = () => {
     );
 };
 
+
 // --- MAIN PARTNER DASHBOARD ---
 const PartnerDashboard = () => {
     const [activeTab, setActiveTab] = useState('overview');
     const { user, logout } = useUser();
 
+
     const [quests, setQuests] = useState([]);
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
 
+
     useEffect(() => {
         // Protect against unauthorized access and pending role requests
         if (!user) return;
+
 
         if (user.role !== 'partner') {
             alert('Access denied. Partner privileges required.');
@@ -1919,6 +2046,7 @@ const PartnerDashboard = () => {
             return;
         }
 
+
         // Block access if user has pending role request (they're still technically 'user' role)
         if (user.requested_role && !user.is_approved) {
             alert('Your partner application is still pending approval. Redirecting to dashboard.');
@@ -1926,14 +2054,17 @@ const PartnerDashboard = () => {
             return;
         }
 
+
         if (user.role === 'partner' && user.is_approved) {
             fetchData();
         }
     }, [user]);
 
+
     const fetchData = async () => {
         try {
             const token = localStorage.getItem('token');
+
 
             // Fetch quests
             const questsRes = await fetch('/api/quests', {
@@ -1943,6 +2074,7 @@ const PartnerDashboard = () => {
             const userQuests = questsData.filter(q => q.createdBy?._id === user?._id || q.createdBy === user?._id);
             setQuests(userQuests);
 
+
             // Fetch posts
             const postsRes = await fetch('/api/posts', {
                 headers: { 'x-auth-token': token }
@@ -1951,12 +2083,14 @@ const PartnerDashboard = () => {
             const userPosts = postsData.filter(p => p.author?._id === user?._id || p.author === user?._id);
             setPosts(userPosts);
 
+
             setLoading(false);
         } catch (error) {
             console.error('Error fetching data:', error);
             setLoading(false);
         }
     };
+
 
     if (!user) {
         return (
@@ -1966,6 +2100,7 @@ const PartnerDashboard = () => {
         );
     }
 
+
     if (user.role !== 'partner' && user.role !== 'admin') {
         return (
             <div className="pt-24 text-center">
@@ -1973,6 +2108,7 @@ const PartnerDashboard = () => {
             </div>
         );
     }
+
 
     return (
         <div className="font-sans bg-gray-50 text-gray-800 min-h-screen">
@@ -1999,6 +2135,7 @@ const PartnerDashboard = () => {
                     </div>
                 </div>
 
+
                 {/* Navigation Tabs */}
                 <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-200 inline-flex items-center gap-3 mb-8">
                     <TabButton id="overview" label="Overview" icon={<BarChart className="w-4 h-4" />} activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -2007,6 +2144,7 @@ const PartnerDashboard = () => {
                     <TabButton id="notifications" label="Notifications" icon={<Users className="w-4 h-4" />} activeTab={activeTab} setActiveTab={setActiveTab} />
                     <TabButton id="analytics" label="Analytics" icon={<TrendingUp className="w-4 h-4" />} activeTab={activeTab} setActiveTab={setActiveTab} />
                 </div>
+
 
                 {/* Tab Content */}
                 {activeTab === 'overview' && <OverviewTab quests={quests} posts={posts} setActiveTab={setActiveTab} />}
@@ -2019,5 +2157,10 @@ const PartnerDashboard = () => {
     );
 };
 
+
 export default PartnerDashboard;
+
+
+
+
 
