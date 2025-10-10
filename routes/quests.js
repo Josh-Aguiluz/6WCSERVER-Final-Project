@@ -10,24 +10,14 @@ const path = require('path');
 const fs = require('fs');
 const { uploadToCloudinary, deleteFromCloudinary, extractPublicId } = require('../utils/cloudinaryUpload');
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
 // Create uploads directory if it doesn't exist
 const uploadDir = 'uploads';
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-<<<<<<< HEAD
-// Configure multer for memory storage (for Cloudinary uploads)
-const upload = multer({ 
-=======
-
 // Configure multer for memory storage (for Cloudinary uploads)
 const upload = multer({
->>>>>>> notifs_josh
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit for Cloudinary
   fileFilter: function (req, file, cb) {
@@ -126,10 +116,6 @@ router.post('/', [auth, checkRole('partner', 'admin'), upload.single('photo'), h
     const parsedObjectives = typeof objectives === 'string' ? JSON.parse(objectives) : objectives;
     const parsedSubmissionRequirements = typeof submissionRequirements === 'string' ? JSON.parse(submissionRequirements) : submissionRequirements;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
     let imageUrl = null;
     if (req.file) {
       try {
@@ -142,10 +128,6 @@ router.post('/', [auth, checkRole('partner', 'admin'), upload.single('photo'), h
       }
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
     const newQuest = new Quest({
       title,
       description,
@@ -240,10 +222,6 @@ router.delete('/:id', [auth, checkRole('admin')], async (req, res) => {
       return res.status(404).json({ msg: 'Quest not found' });
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
     // Delete image from Cloudinary if it exists
     if (quest.imageUrl) {
       try {
@@ -257,10 +235,6 @@ router.delete('/:id', [auth, checkRole('admin')], async (req, res) => {
       }
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
     await Quest.findByIdAndDelete(req.params.id);
     res.json({ msg: 'Quest deleted' });
   } catch (err) {
@@ -298,11 +272,7 @@ router.post('/:id/submit', [auth, upload.single('photo'), handleUploadError], as
 
     // Get user to check role
     const user = await User.findById(req.user.id);
-<<<<<<< HEAD
     
-=======
-   
->>>>>>> notifs_josh
     // Upload photo to Cloudinary if provided
     let photoUrl = '';
     if (req.file) {
@@ -316,10 +286,6 @@ router.post('/:id/submit', [auth, upload.single('photo'), handleUploadError], as
       }
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
     // Auto-approve if user is admin
     const isAdmin = user.role === 'admin';
     const submission = new QuestSubmission({

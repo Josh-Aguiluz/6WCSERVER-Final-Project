@@ -2,10 +2,6 @@ const cloudinary = require('../config/cloudinary');
 const { Readable } = require('stream');
 const { smartCompressImage } = require('./imageCompression');
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
 // Convert buffer to stream for Cloudinary
 const bufferToStream = (buffer) => {
   const readable = new Readable();
@@ -15,13 +11,17 @@ const bufferToStream = (buffer) => {
   return readable;
 };
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
 // Upload image to Cloudinary with compression
 const uploadToCloudinary = async (file, folder = 'hau-eco-quest') => {
   try {
+    console.log(`🚀 Starting Cloudinary upload for folder: ${folder}`);
+    console.log(`📁 File info: ${file.originalname}, ${file.mimetype}, ${file.size} bytes`);
+    
+    // Check if file buffer exists
+    if (!file.buffer) {
+      throw new Error('File buffer is missing');
+    }
+
     // Compress image before upload
     const compressionResult = await smartCompressImage(file.buffer, {
       maxWidth: 1920,
@@ -29,15 +29,8 @@ const uploadToCloudinary = async (file, folder = 'hau-eco-quest') => {
       quality: 85
     });
 
-<<<<<<< HEAD
-    console.log(`Image compressed: ${compressionResult.originalSize} -> ${compressionResult.compressedSize} bytes (${compressionResult.compressionRatio}% reduction)`);
+    console.log(`📊 Image compressed: ${compressionResult.originalSize} -> ${compressionResult.compressedSize} bytes (${compressionResult.compressionRatio}% reduction)`);
 
-=======
-
-    console.log(`Image compressed: ${compressionResult.originalSize} -> ${compressionResult.compressedSize} bytes (${compressionResult.compressionRatio}% reduction)`);
-
-
->>>>>>> notifs_josh
     const result = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
@@ -49,22 +42,21 @@ const uploadToCloudinary = async (file, folder = 'hau-eco-quest') => {
           ]
         },
         (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
+          if (error) {
+            console.error('❌ Cloudinary upload stream error:', error);
+            reject(error);
+          } else {
+            console.log('✅ Cloudinary upload successful:', result.public_id);
+            resolve(result);
+          }
         }
       );
 
-<<<<<<< HEAD
       bufferToStream(compressionResult.buffer).pipe(uploadStream);
     });
 
-=======
+    console.log(`🎉 Upload completed successfully: ${result.secure_url}`);
 
-      bufferToStream(compressionResult.buffer).pipe(uploadStream);
-    });
-
-
->>>>>>> notifs_josh
     return {
       public_id: result.public_id,
       secure_url: result.secure_url,
@@ -77,15 +69,17 @@ const uploadToCloudinary = async (file, folder = 'hau-eco-quest') => {
       }
     };
   } catch (error) {
-    console.error('Cloudinary upload error:', error);
-    throw new Error('Failed to upload image to Cloudinary');
+    console.error('❌ Cloudinary upload error:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      folder: folder,
+      fileName: file?.originalname
+    });
+    throw new Error(`Failed to upload image to Cloudinary: ${error.message}`);
   }
 };
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
 // Delete image from Cloudinary
 const deleteFromCloudinary = async (publicId) => {
   try {
@@ -97,10 +91,6 @@ const deleteFromCloudinary = async (publicId) => {
   }
 };
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
 // Extract public ID from Cloudinary URL
 const extractPublicId = (url) => {
   if (!url) return null;
@@ -110,20 +100,8 @@ const extractPublicId = (url) => {
   return `hau-eco-quest/${publicId}`;
 };
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
 module.exports = {
   uploadToCloudinary,
   deleteFromCloudinary,
   extractPublicId
 };
-<<<<<<< HEAD
-=======
-
-
-
-
-
->>>>>>> notifs_josh

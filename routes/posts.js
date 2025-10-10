@@ -8,20 +8,12 @@ const path = require('path');
 const fs = require('fs');
 const { uploadToCloudinary, deleteFromCloudinary, extractPublicId } = require('../utils/cloudinaryUpload');
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
 // Create uploads directory if it doesn't exist
 const uploadDir = 'uploads';
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
 // Configure multer for memory storage (for Cloudinary uploads)
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -136,10 +128,6 @@ router.post('/', auth, upload.single('image'), handleUploadError, async (req, re
       }
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
     let imageUrl = null;
     if (req.file) {
       try {
@@ -154,10 +142,6 @@ router.post('/', auth, upload.single('image'), handleUploadError, async (req, re
       imageUrl = image_url;
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
     const post = new Post({
       title,
       content,
@@ -246,10 +230,6 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(403).json({ msg: 'Not authorized to delete this post' });
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
     // Delete image from Cloudinary if it exists
     if (post.image_url) {
       try {
@@ -263,10 +243,6 @@ router.delete('/:id', auth, async (req, res) => {
       }
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
     // Log deletion reason if provided (for admin deletions)
     if (req.body.reason && req.user.role === 'admin') {
       console.log(`Post ${req.params.id} deleted by admin ${req.user.id}. Reason: ${req.body.reason}`);

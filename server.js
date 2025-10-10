@@ -5,10 +5,6 @@ const cors = require('cors');
 const connectDB = require('./db');
 const path = require('path');
 const cloudinary = require('./config/cloudinary');
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
 
 // Connect to the database
 connectDB();
@@ -42,27 +38,15 @@ app.use((req, res, next) => {
   next();
 });
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
 // Ensure uploads directory exists
 const fs = require('fs');
 const uploadsDir = path.join(__dirname, 'uploads');
 
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
 // Create uploads directory if it doesn't exist
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
   console.log(`📁 Created directory: ${uploadsDir}`);
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
 
 // Serve uploaded files statically from uploads directory
 app.use('/uploads', express.static('uploads', {
@@ -96,10 +80,6 @@ try {
 app.get('/api/health', (req, res) => {
   const uploadsExists = fs.existsSync(uploadsDir);
   const uploadsFiles = fs.existsSync(uploadsDir) ? fs.readdirSync(uploadsDir).length : 0;
-<<<<<<< HEAD
-=======
-
->>>>>>> notifs_josh
 
   res.json({
     status: 'ok',
