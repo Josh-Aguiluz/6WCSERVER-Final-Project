@@ -722,10 +722,23 @@ const QuestModal = ({ quest, onClose, onSave }) => {
         objectives: '',
         submissionRequirements: ''
     });
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(quest?.imageUrl || null);
+    const [isUploading, setIsUploading] = useState(false);
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setSelectedFile(file);
+            const reader = new FileReader();
+            reader.onload = (e) => setPreviewUrl(e.target.result);
+            reader.readAsDataURL(file);
+        }
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave(formData);
+        onSave({ ...formData, image: selectedFile });
     };
 
     return (
@@ -868,13 +881,54 @@ const QuestModal = ({ quest, onClose, onSave }) => {
 
                     <div>
                         <label className="block text-sm font-semibold mb-2">Quest Image</label>
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-green-400 transition-colors">
                         <input
                             type="file"
                             accept="image/*"
-                            onChange={(e) => setFormData({ ...formData, image: e.target.files[0] })}
-                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">Optional: Upload an image for this quest</p>
+                                onChange={handleFileChange}
+                                className="hidden"
+                                id="quest-image-upload"
+                                disabled={isUploading}
+                            />
+                            <label
+                                htmlFor="quest-image-upload"
+                                className={`cursor-pointer block text-center ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                                {previewUrl ? (
+                                    <div className="space-y-3">
+                                        <img
+                                            src={previewUrl}
+                                            alt="Quest preview"
+                                            className="max-h-48 mx-auto rounded-lg shadow-md"
+                                        />
+                                        <div className="flex items-center justify-center gap-2">
+                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                            <p className="text-sm text-green-600 font-medium">Image ready for upload</p>
+                                        </div>
+                                        <p className="text-xs text-gray-500">Click to change image</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        <div className="w-16 h-16 bg-gray-100 rounded-lg mx-auto flex items-center justify-center">
+                                            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-700">Upload quest image</p>
+                                            <p className="text-xs text-gray-500">PNG, JPG, WebP up to 10MB</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </label>
+                        </div>
+                        {selectedFile && (
+                            <div className="mt-2 p-2 bg-green-50 rounded-lg">
+                                <p className="text-xs text-green-700">
+                                    <strong>Selected:</strong> {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                                </p>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex gap-3 pt-4">
@@ -2375,10 +2429,23 @@ const PostModal = ({ post, onClose, onSave }) => {
         category: 'Updates',
         tags: ''
     });
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(post?.image_url || null);
+    const [isUploading, setIsUploading] = useState(false);
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setSelectedFile(file);
+            const reader = new FileReader();
+            reader.onload = (e) => setPreviewUrl(e.target.result);
+            reader.readAsDataURL(file);
+        }
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave(formData);
+        onSave({ ...formData, image: selectedFile });
     };
 
     return (
@@ -2443,13 +2510,54 @@ const PostModal = ({ post, onClose, onSave }) => {
 
                     <div>
                         <label className="block text-sm font-semibold mb-2">Post Image</label>
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-green-400 transition-colors">
                         <input
                             type="file"
                             accept="image/*"
-                            onChange={(e) => setFormData({ ...formData, image: e.target.files[0] })}
-                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">Optional: Upload an image for this post</p>
+                                onChange={handleFileChange}
+                                className="hidden"
+                                id="post-image-upload"
+                                disabled={isUploading}
+                            />
+                            <label
+                                htmlFor="post-image-upload"
+                                className={`cursor-pointer block text-center ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                                {previewUrl ? (
+                                    <div className="space-y-3">
+                                        <img
+                                            src={previewUrl}
+                                            alt="Post preview"
+                                            className="max-h-48 mx-auto rounded-lg shadow-md"
+                                        />
+                                        <div className="flex items-center justify-center gap-2">
+                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                            <p className="text-sm text-green-600 font-medium">Image ready for upload</p>
+                                        </div>
+                                        <p className="text-xs text-gray-500">Click to change image</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        <div className="w-16 h-16 bg-gray-100 rounded-lg mx-auto flex items-center justify-center">
+                                            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-700">Upload post image</p>
+                                            <p className="text-xs text-gray-500">PNG, JPG, WebP up to 10MB</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </label>
+                        </div>
+                        {selectedFile && (
+                            <div className="mt-2 p-2 bg-green-50 rounded-lg">
+                                <p className="text-xs text-green-700">
+                                    <strong>Selected:</strong> {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                                </p>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex gap-3 pt-4">

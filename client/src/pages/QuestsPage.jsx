@@ -9,7 +9,7 @@ import InstagramIcon from '../img/Instagram.png';
 import TiktokIcon from '../img/Tiktok.png';
 
 // --- QUEST CARD COMPONENT ---
-const QuestCard = ({ icon, title, description, difficulty, points, duration, participants, progress, color, onViewDetails, questData, user }) => {
+const QuestCard = ({ icon, title, description, difficulty, points, duration, participants, progress, color, onViewDetails, questData, user, imageUrl }) => {
   const difficultyStyles = {
     Easy: 'bg-green-100 text-green-800 border border-green-300',
     Medium: 'bg-amber-100 text-amber-800 border border-amber-300',
@@ -91,14 +91,32 @@ const QuestCard = ({ icon, title, description, difficulty, points, duration, par
 
   return (
     <div className="bg-white rounded-xl overflow-hidden hover:shadow-2xl transition-all group border border-gray-200">
-      {/* Image Section */}
-      <div className={`h-48 bg-gradient-to-br ${activeColor.gradient} flex items-center justify-center relative overflow-hidden`}>
-        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
-        <div className="relative z-10 text-white">
-          {React.cloneElement(icon, { className: 'w-16 h-16' })}
+      {/* Image Section with Background Image */}
+      <div className="h-48 relative overflow-hidden">
+        {imageUrl ? (
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: `url(${imageUrl})` }}
+          >
+            <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+          </div>
+        ) : (
+          <div className={`absolute inset-0 bg-gradient-to-br ${activeColor.gradient}`}>
+            <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
+          </div>
+        )}
+        
+        {/* Category Icon and Difficulty Badge - Positioned at bottom left and top right */}
+        <div className="absolute bottom-3 left-3">
+          <div className={`w-12 h-12 rounded-xl bg-white bg-opacity-90 backdrop-blur-sm flex items-center justify-center shadow-lg border-2 border-white border-opacity-50`}>
+            <div className={`text-${color}-600`}>
+              {React.cloneElement(icon, { className: 'w-6 h-6' })}
+            </div>
+          </div>
         </div>
+        
         <div className="absolute top-3 right-3">
-          <span className={`text-xs font-bold px-3 py-1.5 rounded-lg ${difficultyStyles[difficulty]}`}>
+          <span className={`text-xs font-bold px-3 py-1.5 rounded-lg ${difficultyStyles[difficulty]} bg-white bg-opacity-90 backdrop-blur-sm`}>
             {difficulty}
           </span>
         </div>
@@ -203,7 +221,8 @@ const QuestsPage = ({ onPageChange }) => {
                     participants: quest.completions?.length || 0,
                     progress: ((quest.completions?.length || 0) / (quest.maxParticipants || 50)) * 100,
                     submissionStatus: userSubmission?.status || null,
-                    existingSubmission: userSubmission || null
+                    existingSubmission: userSubmission || null,
+                    imageUrl: quest.imageUrl || null
                 };
             });
             
@@ -220,7 +239,8 @@ const QuestsPage = ({ onPageChange }) => {
                         color: getCategoryColor(dailyQuestData.quest.category),
                         participants: dailyQuestData.quest.completions?.length || 0,
                         progress: ((dailyQuestData.quest.completions?.length || 0) / (dailyQuestData.quest.maxParticipants || 50)) * 100,
-                        isDailyQuest: true
+                        isDailyQuest: true,
+                        imageUrl: dailyQuestData.quest.imageUrl || null
                     };
                     setTodayQuest(transformedDailyQuest);
                 }
@@ -432,7 +452,7 @@ const QuestsPage = ({ onPageChange }) => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filteredQuests.map((quest) => (
-                  <QuestCard key={quest.id} {...quest} onViewDetails={handleViewDetails} questData={quest} user={user} />
+                  <QuestCard key={quest.id} {...quest} onViewDetails={handleViewDetails} questData={quest} user={user} imageUrl={quest.imageUrl} />
                 ))}
               </div>
             )}

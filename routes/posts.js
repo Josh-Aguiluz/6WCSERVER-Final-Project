@@ -6,28 +6,20 @@ const Post = require('../models/Post');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { uploadToCloudinary, deleteFromCloudinary, extractPublicId } = require('../utils/cloudinaryUpload');
 
-// Create client/img/posts directory if it doesn't exist
-const uploadDir = 'client/img/posts';
+// Create uploads directory if it doesn't exist
+const uploadDir = 'uploads';
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    cb(null, `post-${Date.now()}${path.extname(file.originalname)}`);
-  }
-});
-
+// Configure multer for memory storage (for Cloudinary uploads)
 const upload = multer({
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit for Cloudinary
   fileFilter: function (req, file, cb) {
-    const allowedTypes = /jpeg|jpg|png|gif/;
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
 
@@ -101,7 +93,7 @@ router.get('/:id', async (req, res) => {
 // @route   POST /api/posts
 // @desc    Create a new post (All users can post)
 // @access  Private
-router.post('/', auth, upload.single('image'), async (req, res) => {
+router.post('/', auth, upload.single('image'), handleUploadError, async (req, res) => {
   try {
     // Handle multer errors
     if (req.fileValidationError) {
@@ -124,13 +116,27 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
       }
     }
 
+    let imageUrl = null;
+    if (req.file) {
+      try {
+        const cloudinaryResult = await uploadToCloudinary(req.file, 'hau-eco-quest/posts');
+        imageUrl = cloudinaryResult.secure_url;
+        console.log(`Post image uploaded to Cloudinary: ${cloudinaryResult.compression.compressionRatio}% compression achieved`);
+      } catch (error) {
+        console.error('Cloudinary upload error:', error);
+        return res.status(500).json({ msg: 'Failed to upload image' });
+      }
+    } else if (image_url) {
+      imageUrl = image_url;
+    }
+
     const post = new Post({
       title,
       content,
       category: category || 'Updates',
       author: req.user.id,
       tags: processedTags,
-      image_url: req.file ? `/img/posts/${req.file.filename}` : (image_url || null)
+      image_url: imageUrl
     });
 
     await post.save();
@@ -196,6 +202,19 @@ router.delete('/:id', auth, async (req, res) => {
     // Check if user is the author or admin
     if (post.author.toString() !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ msg: 'Not authorized to delete this post' });
+    }
+
+    // Delete image from Cloudinary if it exists
+    if (post.image_url) {
+      try {
+        const publicId = extractPublicId(post.image_url);
+        if (publicId) {
+          await deleteFromCloudinary(publicId);
+        }
+      } catch (error) {
+        console.error('Error deleting image from Cloudinary:', error);
+        // Continue with post deletion even if image deletion fails
+      }
     }
 
     // Log deletion reason if provided (for admin deletions)

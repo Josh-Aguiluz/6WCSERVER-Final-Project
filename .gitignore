@@ -12,14 +12,8 @@ client/node_modules/
 client/dist/
 client/build/
 
-# Uploads
+# Uploads (local development files - will be in Cloudinary in production)
 uploads/
-*.jpg
-*.jpeg
-*.png
-*.gif
-*.mp4
-*.mov
 
 # IDE
 .vscode/

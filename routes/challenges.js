@@ -9,28 +9,20 @@ const roleCheck = require('../middleware/roleCheck');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { uploadToCloudinary, deleteFromCloudinary, extractPublicId } = require('../utils/cloudinaryUpload');
 
-// Create client/img/challenges directory if it doesn't exist
-const uploadDir = 'client/img/challenges';
+// Create uploads directory if it doesn't exist
+const uploadDir = 'uploads';
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
-        cb(null, `challenge-${Date.now()}${path.extname(file.originalname)}`);
-    }
-});
-
+// Configure multer for memory storage (for Cloudinary uploads)
 const upload = multer({
-    storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 },
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit for Cloudinary
     fileFilter: function (req, file, cb) {
-        const allowedTypes = /jpeg|jpg|png|gif/;
+        const allowedTypes = /jpeg|jpg|png|gif|webp/;
         const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
         const mimetype = allowedTypes.test(file.mimetype);
         
@@ -95,7 +87,7 @@ router.get('/:id', async (req, res) => {
 // @route   POST /api/challenges
 // @desc    Create a new challenge (Admin/Partner only)
 // @access  Private
-router.post('/', [auth, roleCheck('admin', 'partner')], async (req, res) => {
+router.post('/', [auth, roleCheck('admin', 'partner'), upload.single('image'), handleUploadError], async (req, res) => {
     try {
         const {
             title,
@@ -107,6 +99,18 @@ router.post('/', [auth, roleCheck('admin', 'partner')], async (req, res) => {
             imageUrl
         } = req.body;
 
+        let finalImageUrl = imageUrl;
+        if (req.file) {
+            try {
+                const cloudinaryResult = await uploadToCloudinary(req.file, 'hau-eco-quest/challenges');
+                finalImageUrl = cloudinaryResult.secure_url;
+                console.log(`Challenge image uploaded to Cloudinary: ${cloudinaryResult.compression.compressionRatio}% compression achieved`);
+            } catch (error) {
+                console.error('Cloudinary upload error:', error);
+                return res.status(500).json({ msg: 'Failed to upload image' });
+            }
+        }
+
         const newChallenge = new Challenge({
             title,
             description,
@@ -114,7 +118,7 @@ router.post('/', [auth, roleCheck('admin', 'partner')], async (req, res) => {
             category: category || 'Environmental',
             badgeReward: badgeReward || 'Tree Master',
             endDate,
-            imageUrl,
+            imageUrl: finalImageUrl,
             currentProgress: 0
         });
 
@@ -158,6 +162,17 @@ router.post('/:id/join', [auth, upload.single('photo'), handleUploadError], asyn
             return res.status(400).json({ msg: 'Please upload a photo as proof' });
         }
 
+        // Upload photo to Cloudinary
+        let photoUrl = '';
+        try {
+            const cloudinaryResult = await uploadToCloudinary(req.file, 'hau-eco-quest/challenge-submissions');
+            photoUrl = cloudinaryResult.secure_url;
+            console.log(`Challenge submission photo uploaded to Cloudinary: ${cloudinaryResult.compression.compressionRatio}% compression achieved`);
+        } catch (error) {
+            console.error('Cloudinary upload error:', error);
+            return res.status(500).json({ msg: 'Failed to upload photo' });
+        }
+
         const { contribution } = req.body;
         const contributionAmount = contribution || 1;
 
@@ -165,7 +180,7 @@ router.post('/:id/join', [auth, upload.single('photo'), handleUploadError], asyn
         challenge.participants.push({
             user: req.user.id,
             contribution: contributionAmount,
-            photo_url: `/img/challenges/${req.file.filename}`,
+            photo_url: photoUrl,
             status: 'pending'
         });
 
@@ -342,6 +357,17 @@ router.post('/submit', [auth, upload.single('photo'), handleUploadError], async 
             return res.status(400).json({ msg: 'Photo proof is required' });
         }
 
+        // Upload photo to Cloudinary
+        let photoUrl = '';
+        try {
+            const cloudinaryResult = await uploadToCloudinary(req.file, 'hau-eco-quest/challenge-submissions');
+            photoUrl = cloudinaryResult.secure_url;
+            console.log(`Challenge submission photo uploaded to Cloudinary: ${cloudinaryResult.compression.compressionRatio}% compression achieved`);
+        } catch (error) {
+            console.error('Cloudinary upload error:', error);
+            return res.status(500).json({ msg: 'Failed to upload photo' });
+        }
+
         const challenge = await Challenge.findById(challengeId);
         if (!challenge) {
             return res.status(404).json({ msg: 'Challenge not found' });
@@ -360,7 +386,7 @@ router.post('/submit', [auth, upload.single('photo'), handleUploadError], async 
         challenge.participants.push({
             user: req.user.id,
             contribution: 1,
-            photo_url: `/img/challenges/${req.file.filename}`,
+            photo_url: photoUrl,
             status: 'pending'
         });
 
@@ -385,6 +411,19 @@ router.delete('/:id', [auth, roleCheck('admin')], async (req, res) => {
         
         if (!challenge) {
             return res.status(404).json({ msg: 'Challenge not found' });
+        }
+
+        // Delete image from Cloudinary if it exists
+        if (challenge.imageUrl) {
+            try {
+                const publicId = extractPublicId(challenge.imageUrl);
+                if (publicId) {
+                    await deleteFromCloudinary(publicId);
+                }
+            } catch (error) {
+                console.error('Error deleting image from Cloudinary:', error);
+                // Continue with challenge deletion even if image deletion fails
+            }
         }
 
         await Challenge.findByIdAndDelete(req.params.id);

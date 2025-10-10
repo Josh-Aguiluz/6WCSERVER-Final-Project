@@ -8,35 +8,27 @@ const checkRole = require('../middleware/roleCheck');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { uploadToCloudinary, deleteFromCloudinary, extractPublicId } = require('../utils/cloudinaryUpload');
 
-// Create client/img/quests directory if it doesn't exist
-const uploadDir = 'client/img/quests';
+// Create uploads directory if it doesn't exist
+const uploadDir = 'uploads';
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    cb(null, `quest-${Date.now()}${path.extname(file.originalname)}`);
-  }
-});
-
+// Configure multer for memory storage (for Cloudinary uploads)
 const upload = multer({ 
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit for Cloudinary
   fileFilter: function (req, file, cb) {
-    const allowedTypes = /jpeg|jpg|png|gif|mp4|mov/;
+    const allowedTypes = /jpeg|jpg|png|gif|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
     
     if (mimetype && extname) {
       return cb(null, true);
     } else {
-      cb(new Error('Only images and videos are allowed!'));
+      cb(new Error('Only images are allowed!'));
     }
   }
 });
@@ -119,6 +111,18 @@ router.post('/', [auth, checkRole('partner', 'admin'), upload.single('photo'), h
     const parsedObjectives = typeof objectives === 'string' ? JSON.parse(objectives) : objectives;
     const parsedSubmissionRequirements = typeof submissionRequirements === 'string' ? JSON.parse(submissionRequirements) : submissionRequirements;
 
+    let imageUrl = null;
+    if (req.file) {
+      try {
+        const cloudinaryResult = await uploadToCloudinary(req.file, 'hau-eco-quest/quests');
+        imageUrl = cloudinaryResult.secure_url;
+        console.log(`Quest image uploaded to Cloudinary: ${cloudinaryResult.compression.compressionRatio}% compression achieved`);
+      } catch (error) {
+        console.error('Cloudinary upload error:', error);
+        return res.status(500).json({ msg: 'Failed to upload image' });
+      }
+    }
+
     const newQuest = new Quest({
       title,
       description,
@@ -132,7 +136,7 @@ router.post('/', [auth, checkRole('partner', 'admin'), upload.single('photo'), h
       maxParticipants: maxParticipants || 100,
       createdBy: req.user.id,
       isActive: true,
-      imageUrl: req.file ? `/img/quests/${req.file.filename}` : null
+      imageUrl: imageUrl
     });
 
     const quest = await newQuest.save();
@@ -206,6 +210,19 @@ router.delete('/:id', [auth, checkRole('admin')], async (req, res) => {
       return res.status(404).json({ msg: 'Quest not found' });
     }
 
+    // Delete image from Cloudinary if it exists
+    if (quest.imageUrl) {
+      try {
+        const publicId = extractPublicId(quest.imageUrl);
+        if (publicId) {
+          await deleteFromCloudinary(publicId);
+        }
+      } catch (error) {
+        console.error('Error deleting image from Cloudinary:', error);
+        // Continue with quest deletion even if image deletion fails
+      }
+    }
+
     await Quest.findByIdAndDelete(req.params.id);
     res.json({ msg: 'Quest deleted' });
   } catch (err) {
@@ -240,12 +257,25 @@ router.post('/:id/submit', [auth, upload.single('photo'), handleUploadError], as
     // Get user to check role
     const user = await User.findById(req.user.id);
     
+    // Upload photo to Cloudinary if provided
+    let photoUrl = '';
+    if (req.file) {
+      try {
+        const cloudinaryResult = await uploadToCloudinary(req.file, 'hau-eco-quest/submissions');
+        photoUrl = cloudinaryResult.secure_url;
+        console.log(`Quest submission photo uploaded to Cloudinary: ${cloudinaryResult.compression.compressionRatio}% compression achieved`);
+      } catch (error) {
+        console.error('Cloudinary upload error:', error);
+        return res.status(500).json({ msg: 'Failed to upload photo' });
+      }
+    }
+
     // Auto-approve if user is admin
     const isAdmin = user.role === 'admin';
     const submission = new QuestSubmission({
       user_id: req.user.id,
       quest_id: req.params.id,
-      photo_url: req.file ? `/img/quests/${req.file.filename}` : '',
+      photo_url: photoUrl,
       reflection_text: reflection_text || '',
       status: isAdmin ? 'approved' : 'pending',
       reviewed_by: isAdmin ? req.user.id : null,
