@@ -1,12 +1,13 @@
 //Josh Andrei Aguiluz
 import React, { useState, useEffect } from 'react';
 import { Search, Droplets, TreePine, Recycle, Sun, Leaf, Building, Clock, Users, Award, Lightbulb, BookOpen, Smile, Camera, Handshake, Sparkles, Filter } from 'lucide-react';
-import QuestDetailsPage from './QuestDetailsPage'; 
+import QuestDetailsPage from './QuestDetailsPage';
 import { questAPI } from '../utils/api';
 import { useUser } from '../context/UserContext';
 import FacebookIcon from '../img/Facebook.png';
 import InstagramIcon from '../img/Instagram.png';
 import TiktokIcon from '../img/Tiktok.png';
+
 
 // --- QUEST CARD COMPONENT ---
 const QuestCard = ({ icon, title, description, difficulty, points, duration, participants, progress, color, onViewDetails, questData, user, imageUrl }) => {
@@ -15,7 +16,7 @@ const QuestCard = ({ icon, title, description, difficulty, points, duration, par
     Medium: 'bg-amber-100 text-amber-800 border border-amber-300',
     Hard: 'bg-red-100 text-red-800 border border-red-300',
   };
-  
+ 
   const colorVariants = {
     green: { gradient: 'from-green-400 to-emerald-500', bg: 'bg-green-600', hover: 'hover:bg-green-700' },
     yellow: { gradient: 'from-yellow-400 to-amber-500', bg: 'bg-yellow-600', hover: 'hover:bg-yellow-700' },
@@ -26,9 +27,11 @@ const QuestCard = ({ icon, title, description, difficulty, points, duration, par
   };
   const activeColor = colorVariants[color] || colorVariants.green;
 
+
   const currentParticipants = questData?.completions?.length || participants || 0;
   const maxParticipants = questData?.maxParticipants || 100;
   const isQuestFull = currentParticipants >= maxParticipants;
+
 
   const getButtonText = () => {
     if (!user) return 'Login to Start';
@@ -42,41 +45,42 @@ const QuestCard = ({ icon, title, description, difficulty, points, duration, par
     return 'Start Quest';
   };
 
+
   const getButtonColor = () => {
     if (isQuestFull && user && user.role === 'user') {
       return 'bg-gray-500 text-white cursor-not-allowed hover:bg-gray-500';
     }
-    
+   
     // Get category-based colors
     const categoryColorMap = {
-      green: { 
-        solid: 'bg-green-500 text-white hover:bg-green-600', 
-        outline: 'bg-transparent border-2 border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700' 
+      green: {
+        solid: 'bg-green-500 text-white hover:bg-green-600',
+        outline: 'bg-transparent border-2 border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700'
       },
-      yellow: { 
-        solid: 'bg-yellow-500 text-white hover:bg-yellow-600', 
-        outline: 'bg-transparent border-2 border-yellow-600 text-yellow-700 hover:bg-yellow-50 hover:text-yellow-800' 
+      yellow: {
+        solid: 'bg-yellow-500 text-white hover:bg-yellow-600',
+        outline: 'bg-transparent border-2 border-yellow-600 text-yellow-700 hover:bg-yellow-50 hover:text-yellow-800'
       },
-      blue: { 
-        solid: 'bg-blue-500 text-white hover:bg-blue-600', 
-        outline: 'bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-700' 
+      blue: {
+        solid: 'bg-blue-500 text-white hover:bg-blue-600',
+        outline: 'bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-50 hover:text-blue-700'
       },
-      cyan: { 
-        solid: 'bg-cyan-500 text-white hover:bg-cyan-600', 
-        outline: 'bg-transparent border-2 border-cyan-600 text-cyan-600 hover:bg-cyan-50 hover:text-cyan-700' 
+      cyan: {
+        solid: 'bg-cyan-500 text-white hover:bg-cyan-600',
+        outline: 'bg-transparent border-2 border-cyan-600 text-cyan-600 hover:bg-cyan-50 hover:text-cyan-700'
       },
-      lime: { 
-        solid: 'bg-lime-500 text-white hover:bg-lime-600', 
-        outline: 'bg-transparent border-2 border-lime-600 text-lime-600 hover:bg-lime-50 hover:text-lime-700' 
+      lime: {
+        solid: 'bg-lime-500 text-white hover:bg-lime-600',
+        outline: 'bg-transparent border-2 border-lime-600 text-lime-600 hover:bg-lime-50 hover:text-lime-700'
       },
-      indigo: { 
-        solid: 'bg-indigo-500 text-white hover:bg-indigo-600', 
-        outline: 'bg-transparent border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700' 
+      indigo: {
+        solid: 'bg-indigo-500 text-white hover:bg-indigo-600',
+        outline: 'bg-transparent border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700'
       },
     };
-    
+   
     const currentColor = categoryColorMap[color] || categoryColorMap.green;
-    
+   
     if (user && (user.role === 'admin' || user.role === 'partner')) {
       return currentColor.outline;
     }
@@ -85,16 +89,17 @@ const QuestCard = ({ icon, title, description, difficulty, points, duration, par
       if (questData.existingSubmission.status === 'approved') return currentColor.outline;
       if (questData.existingSubmission.status === 'rejected') return 'bg-red-600 text-white hover:bg-red-700';
     }
-    
+   
     return currentColor.solid;
   };
+
 
   return (
     <div className="bg-white rounded-xl overflow-hidden hover:shadow-2xl transition-all group border border-gray-200">
       {/* Image Section with Background Image */}
       <div className="h-48 relative overflow-hidden">
         {imageUrl ? (
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url(${imageUrl})` }}
           >
@@ -105,7 +110,7 @@ const QuestCard = ({ icon, title, description, difficulty, points, duration, par
             <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
           </div>
         )}
-        
+       
         {/* Category Icon and Difficulty Badge - Positioned at bottom left and top right */}
         <div className="absolute bottom-3 left-3">
           <div className={`w-12 h-12 rounded-xl bg-white bg-opacity-90 backdrop-blur-sm flex items-center justify-center shadow-lg border-2 border-white border-opacity-50`}>
@@ -114,7 +119,7 @@ const QuestCard = ({ icon, title, description, difficulty, points, duration, par
             </div>
           </div>
         </div>
-        
+       
         <div className="absolute top-3 right-3">
           <span className={`text-xs font-bold px-3 py-1.5 rounded-lg ${difficultyStyles[difficulty]} bg-white bg-opacity-90 backdrop-blur-sm`}>
             {difficulty}
@@ -122,11 +127,12 @@ const QuestCard = ({ icon, title, description, difficulty, points, duration, par
         </div>
       </div>
 
+
       {/* Content Section */}
       <div className="p-5">
         <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1">{title}</h3>
         <p className="text-gray-600 text-sm mb-4 line-clamp-2">{description}</p>
-        
+       
         {/* Stats */}
         <div className="flex items-center justify-between text-xs text-gray-600 mb-4 pb-4 border-b border-gray-200">
           <div className="flex items-center gap-1.5">
@@ -143,6 +149,7 @@ const QuestCard = ({ icon, title, description, difficulty, points, duration, par
           </div>
         </div>
 
+
         {/* Progress Bar */}
         <div className="mb-4">
           <div className="flex justify-between text-xs text-gray-600 mb-2">
@@ -154,12 +161,13 @@ const QuestCard = ({ icon, title, description, difficulty, points, duration, par
           </div>
         </div>
 
-        <button 
+
+        <button
         onClick={() => onViewDetails(questData)}
         disabled={isQuestFull && user && user.role === 'user'}
         className={`w-full ${getButtonColor()} font-bold py-3 px-4 rounded-lg transition-all shadow-md ${
-          isQuestFull && user && user.role === 'user' 
-            ? 'cursor-not-allowed opacity-60' 
+          isQuestFull && user && user.role === 'user'
+            ? 'cursor-not-allowed opacity-60'
             : 'hover:shadow-lg transform hover:-translate-y-0.5'
         }`}
         >
@@ -169,6 +177,7 @@ const QuestCard = ({ icon, title, description, difficulty, points, duration, par
     </div>
   );
 };
+
 
 const GuidelineCard = ({ icon, title, description, iconColor }) => (
   <div className="text-center p-6 bg-white rounded-xl border border-gray-200 shadow-lg">
@@ -182,6 +191,7 @@ const GuidelineCard = ({ icon, title, description, iconColor }) => (
   </div>
 );
 
+
 // --- MAIN PAGE COMPONENT ---
 const QuestsPage = ({ onPageChange }) => {
     const { user } = useUser();
@@ -193,14 +203,16 @@ const QuestsPage = ({ onPageChange }) => {
     const [selectedDifficulty, setSelectedDifficulty] = useState('All');
     const [todayQuest, setTodayQuest] = useState(null);
 
+
     useEffect(() => {
         fetchQuests();
     }, [user]);
 
+
     const fetchQuests = async () => {
         try {
             const questsData = await questAPI.getAllQuests();
-            
+           
             let userSubmissions = [];
             if (user) {
                 try {
@@ -209,10 +221,10 @@ const QuestsPage = ({ onPageChange }) => {
                     console.error('Error fetching user submissions:', error);
                 }
             }
-            
+           
             const transformedQuests = questsData.map(quest => {
                 const userSubmission = userSubmissions.find(sub => sub.quest_id?._id === quest._id);
-                
+               
                 return {
                     ...quest,
                     id: quest._id,
@@ -225,9 +237,9 @@ const QuestsPage = ({ onPageChange }) => {
                     imageUrl: quest.imageUrl || null
                 };
             });
-            
+           
             setQuests(transformedQuests);
-            
+           
             try {
                 const dailyQuestRes = await fetch('/api/daily/quest');
                 const dailyQuestData = await dailyQuestRes.json();
@@ -251,13 +263,14 @@ const QuestsPage = ({ onPageChange }) => {
                     setTodayQuest(activeQuests[0]);
                 }
             }
-            
+           
             setLoading(false);
         } catch (error) {
             console.error('Error fetching quests:', error);
             setLoading(false);
         }
     };
+
 
     const getCategoryIcon = (category) => {
         const icons = {
@@ -271,6 +284,7 @@ const QuestsPage = ({ onPageChange }) => {
         return icons[category] || <Leaf className="w-6 h-6"/>;
     };
 
+
     const getCategoryColor = (category) => {
         const colors = {
             'Gardening & Planting': 'green',
@@ -283,6 +297,7 @@ const QuestsPage = ({ onPageChange }) => {
         return colors[category] || 'green';
     };
 
+
     const handleViewDetails = (questData) => {
         if (!user) {
             onPageChange('login');
@@ -291,14 +306,17 @@ const QuestsPage = ({ onPageChange }) => {
         setSelectedQuest(questData);
     };
 
+
     const handleBack = () => {
         setSelectedQuest(null);
     };
+
 
     const handleQuestSubmission = () => {
         fetchQuests();
         console.log('Quest submitted successfully!');
     };
+
 
     const filteredQuests = quests.filter(quest => {
         const matchesSearch = quest.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -307,6 +325,7 @@ const QuestsPage = ({ onPageChange }) => {
         const matchesDifficulty = selectedDifficulty === 'All' || quest.difficulty === selectedDifficulty;
         return matchesSearch && matchesCategory && matchesDifficulty;
     });
+
 
     if (loading) {
         return (
@@ -319,9 +338,11 @@ const QuestsPage = ({ onPageChange }) => {
         );
     }
 
+
     if (selectedQuest) {
         return <QuestDetailsPage quest={selectedQuest} onBack={handleBack} onSubmissionSuccess={handleQuestSubmission} userRole={user?.role} />;
     }
+
 
   return (
     <div className="font-sans bg-gray-50 text-gray-900">
@@ -343,26 +364,28 @@ const QuestsPage = ({ onPageChange }) => {
           </div>
         </section>
 
+
         {/* Filters Bar */}
         <section className="bg-white border-b border-gray-200 shadow-sm sticky top-16 z-40">
           <div className="container mx-auto px-6 py-4">
             <div className="flex flex-col md:flex-row gap-4">
               {/* Search */}
               <div className="relative flex-1">
-                <input 
-                  type="text" 
-                  placeholder="Search quests..." 
+                <input
+                  type="text"
+                  placeholder="Search quests..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-gray-50 text-gray-900 placeholder-gray-400 border-2 border-gray-200 rounded-lg px-4 py-2.5 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent" 
+                  className="w-full bg-gray-50 text-gray-900 placeholder-gray-400 border-2 border-gray-200 rounded-lg px-4 py-2.5 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               </div>
 
+
               {/* Category Filter */}
               <div className="flex gap-2 overflow-x-auto">
                 {['All', 'Gardening', 'Recycling', 'Energy', 'Water'].map((cat) => (
-                  <button 
+                  <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat === 'All' ? 'All' : cat === 'Gardening' ? 'Gardening & Planting' : cat === 'Recycling' ? 'Recycling & Waste' : cat === 'Energy' ? 'Energy Conservation' : 'Water Conservation')}
                     className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-all ${
@@ -371,7 +394,7 @@ const QuestsPage = ({ onPageChange }) => {
                       (selectedCategory === 'Recycling & Waste' && cat === 'Recycling') ||
                       (selectedCategory === 'Energy Conservation' && cat === 'Energy') ||
                       (selectedCategory === 'Water Conservation' && cat === 'Water')
-                        ? 'bg-green-600 text-white shadow-lg' 
+                        ? 'bg-green-600 text-white shadow-lg'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -380,8 +403,9 @@ const QuestsPage = ({ onPageChange }) => {
                 ))}
               </div>
 
+
               {/* Difficulty Dropdown */}
-              <select 
+              <select
                 value={selectedDifficulty}
                 onChange={(e) => setSelectedDifficulty(e.target.value)}
                 className="bg-gray-50 text-gray-900 border-2 border-gray-200 rounded-lg px-4 py-2.5 font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -394,6 +418,7 @@ const QuestsPage = ({ onPageChange }) => {
             </div>
           </div>
         </section>
+
 
         {/* Today's Quest Banner */}
         {todayQuest && (
@@ -412,7 +437,7 @@ const QuestsPage = ({ onPageChange }) => {
                     <p className="text-blue-100 text-sm">{todayQuest.description?.substring(0, 120)}...</p>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={() => handleViewDetails(todayQuest)}
                   className="bg-white text-blue-600 font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition-all shadow-lg whitespace-nowrap"
                 >
@@ -423,6 +448,7 @@ const QuestsPage = ({ onPageChange }) => {
           </section>
         )}
 
+
         {/* Available Quests Section */}
         <section className="container mx-auto px-6 py-8 relative">
           {/* Discord-inspired decorative background */}
@@ -431,12 +457,13 @@ const QuestsPage = ({ onPageChange }) => {
             <div className="absolute bottom-20 left-20 w-96 h-96 bg-gradient-to-br from-blue-200 to-cyan-200 rounded-full opacity-20 blur-3xl"></div>
             <div className="absolute top-1/2 left-1/3 w-80 h-80 bg-gradient-to-br from-purple-200 to-indigo-200 rounded-full opacity-15 blur-3xl"></div>
           </div>
-          
+         
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-900">Available Quests</h2>
               <span className="text-gray-600 text-sm font-semibold">{filteredQuests.length} quests available</span>
             </div>
+
 
             {/* Quest Grid */}
             {filteredQuests.length === 0 ? (
@@ -444,8 +471,8 @@ const QuestsPage = ({ onPageChange }) => {
                 <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-xl font-bold text-gray-600 mb-2">No Quests Found</h3>
                 <p className="text-gray-500">
-                  {searchTerm || selectedCategory !== 'All' 
-                    ? 'Try adjusting your filters' 
+                  {searchTerm || selectedCategory !== 'All'
+                    ? 'Try adjusting your filters'
                     : 'No quests available at the moment'}
                 </p>
               </div>
@@ -458,7 +485,7 @@ const QuestsPage = ({ onPageChange }) => {
             )}
           </div>
         </section>
-        
+       
         {/* QUEST GUIDELINES SECTION */}
         <section className="container mx-auto px-6 py-16">
           <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl shadow-2xl overflow-hidden">
@@ -482,6 +509,7 @@ const QuestsPage = ({ onPageChange }) => {
                 </div>
               </div>
 
+
               {/* Right side - Guidelines */}
               <div className="p-10 flex flex-col justify-center">
                 <div className="mb-8">
@@ -490,6 +518,7 @@ const QuestsPage = ({ onPageChange }) => {
                     Follow these principles to ensure your environmental impact is genuine and verified
                   </p>
                 </div>
+
 
                 <div className="space-y-6">
                   <div className="flex gap-4 items-start">
@@ -502,6 +531,7 @@ const QuestsPage = ({ onPageChange }) => {
                     </div>
                   </div>
 
+
                   <div className="flex gap-4 items-start">
                     <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
                       <Camera className="w-7 h-7 text-blue-600"/>
@@ -511,6 +541,7 @@ const QuestsPage = ({ onPageChange }) => {
                       <p className="text-sm text-gray-600 leading-relaxed">Document your completion clearly with photos or videos for verification</p>
                     </div>
                   </div>
+
 
                   <div className="flex gap-4 items-start">
                     <div className="w-14 h-14 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -527,6 +558,7 @@ const QuestsPage = ({ onPageChange }) => {
           </div>
         </section>
       </main>
+
 
         {/* Footer */}
         <footer className="bg-green-700 text-white pt-16 pb-8 px-6">
@@ -548,6 +580,7 @@ const QuestsPage = ({ onPageChange }) => {
             </p>
           </div>
 
+
           {/* Adventure Paths */}
           <div>
             <h4 className="font-bold mb-4">Adventure Paths</h4>
@@ -558,6 +591,7 @@ const QuestsPage = ({ onPageChange }) => {
             </ul>
           </div>
 
+
           {/* Support Guild */}
           <div>
             <h4 className="font-bold mb-4">Support Guild</h4>
@@ -566,6 +600,7 @@ const QuestsPage = ({ onPageChange }) => {
               <li><button onClick={() => onPageChange('alliancepartners')} className="hover:text-white">Alliance Partners</button></li>
             </ul>
           </div>
+
 
           {/* Connect */}
           <div>
@@ -583,6 +618,7 @@ const QuestsPage = ({ onPageChange }) => {
           </div>
         </div>
 
+
         <div className="max-w-6xl mx-auto text-center border-t border-green-600 mt-8 pt-6 text-green-200 text-sm">
           <p>© 2025 HAU Eco-Quest. All rights reserved. Built with for a sustainable future.</p>
         </div>
@@ -592,4 +628,11 @@ const QuestsPage = ({ onPageChange }) => {
 };
 
 
+
+
 export default QuestsPage;
+
+
+
+
+
