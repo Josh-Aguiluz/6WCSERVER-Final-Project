@@ -2,22 +2,44 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const connectDB = require('./db');
+const { connectDB, isDatabaseAvailable } = require('./db');
+const { securityConfig, validateEnvironment } = require('./config/security');
 const path = require('path');
 const cloudinary = require('./config/cloudinary');
 
+// Validate environment variables
+const { warnings, errors } = validateEnvironment();
+if (warnings.length > 0) {
+  console.warn('⚠️  Environment warnings:', warnings);
+}
+if (errors.length > 0) {
+  console.error('❌ Environment errors:', errors);
+  console.error('🚨 Please fix these errors before starting the server.');
+  process.exit(1);
+}
 
 // Connect to the database
-connectDB();
-
+connectDB().then(connected => {
+  if (!connected) {
+    console.log('🚀 Server starting in demo mode (limited functionality)');
+  }
+});
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 
+// Security headers
+app.use((req, res, next) => {
+  Object.entries(securityConfig.securityHeaders).forEach(([key, value]) => {
+    res.setHeader(key, value);
+  });
+  next();
+});
+
 // Enhanced CORS configuration
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:5173'],
+  origin: securityConfig.allowedOrigins,
   credentials: true
 }));
 
