@@ -1,5 +1,5 @@
 // Josh Andrei Aguiluz
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // <--- Import useEffect
 import { Navigation } from './layout/Navigation';
 import SignUp from './pages/SignUp';
 import LoginPage from './pages/LoginPage';
@@ -311,6 +311,13 @@ const AppContent = () => {
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
+
+  // --- FIX: Scroll to top on page change ---
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+    
+  }, [currentPage, pageParams]);
+  // --- END FIX ---
 
   const handlePageChange = (page, params = null) => {
     setCurrentPage(page);
