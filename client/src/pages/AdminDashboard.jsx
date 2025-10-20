@@ -40,6 +40,7 @@ const ActivityItem = ({ icon, title, subtitle, time }) => (
 
 const TabButton = ({ id, label, icon, activeTab, setActiveTab }) => (
     <button
+        data-tab={id}
         onClick={() => setActiveTab(id)}
         className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold transition-all text-xs sm:text-sm ${activeTab === id
                 ? 'bg-green-500 text-white shadow-md'

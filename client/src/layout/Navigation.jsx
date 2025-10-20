@@ -29,19 +29,34 @@ export function Navigation({ currentPage, onPageChange }) {
 
   const dropdownRef = useRef(null);
   const notificationDropdownRef = useRef(null);
+  const mobileNotificationRef = useRef(null); // <-- FIX: 1. Added new ref for mobile dropdown
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setProfileDropdownOpen(false);
       }
-      if (notificationDropdownRef.current && !notificationDropdownRef.current.contains(event.target)) {
+      
+      // <-- FIX: 2. Updated click outside logic to check both refs
+      // Check if click is outside the desktop dropdown
+      const isOutsideDesktop = notificationDropdownRef.current
+        ? !notificationDropdownRef.current.contains(event.target)
+        : true;
+
+      // Check if click is outside the mobile notification container
+      const isOutsideMobile = mobileNotificationRef.current
+        ? !mobileNotificationRef.current.contains(event.target)
+        : true;
+
+      // Only close if the click is outside BOTH
+      if (isOutsideDesktop && isOutsideMobile) {
         setNotificationDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
+    // Add all refs to the dependency array
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [dropdownRef, notificationDropdownRef, mobileNotificationRef]); // <-- FIX: 2. Added new ref to dependency array
 
   // Fetch unread notifications
   useEffect(() => {
@@ -243,15 +258,17 @@ export function Navigation({ currentPage, onPageChange }) {
                         <div className="flex gap-2">
                           {unreadNotifications > 0 && (
                             <button
-                              onClick={async () => {
+                              onClick={async (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
                                 try {
                                   await notificationAPI.markAllAsRead();
-                                  fetchUnreadNotifications();
+                                  await fetchUnreadNotifications();
                                 } catch (error) {
                                   console.error('Error marking all as read:', error);
                                 }
                               }}
-                              className="text-sm text-green-600 hover:text-green-700 font-semibold"
+                              className="text-xs text-green-600 hover:text-green-700 font-semibold z-50 relative px-2 py-1"
                             >
                               Mark all as read
                             </button>
@@ -318,23 +335,42 @@ export function Navigation({ currentPage, onPageChange }) {
                     {notifications.length > 0 && (
                       <div className="p-3 border-t border-gray-200 text-center">
                         <button
-                          onClick={() => {
-                            setNotificationDropdownOpen(false);
-                            // Navigate to dashboard notifications tab
-                            if (user.role === 'admin') {
-                              onPageChange('admin-dashboard');
-                            } else if (user.role === 'partner') {
-                              onPageChange('partner-dashboard');
-                            } else {
-                              onPageChange('dashboard');
-                            }
-                            // Trigger notifications tab after navigation
+                          onClick={(e) => {
+                            // --- START: UPDATED LOGIC ---
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('View all notifications clicked (Desktop)');
+
+                            const dashboardPage = user.role === 'admin' ? 'admin-dashboard' :
+                                                  user.role === 'partner' ? 'partner-dashboard' :
+                                                  'dashboard';
+
+                            // Navigate first
+                            onPageChange(dashboardPage);
+
                             setTimeout(() => {
-                              const notificationsTab = document.querySelector('[data-tab="notifications"]');
-                              if (notificationsTab) {
-                                notificationsTab.click();
-                              }
-                            }, 100);
+                              // Robust looped check to wait for tab to render
+                              const tryClick = () => {
+                                const tab = document.querySelector('[data-tab="notifications"]') ||
+                                            document.querySelector('button[data-tab="notifications"]') ||
+                                            document.querySelector('[role="tab"][data-value="notifications"]') ||
+                                            document.querySelector('button:has-text("Notifications")'); // Kept your original robust selector
+                                if (tab) {
+                                  console.log('Notifications tab found, clicking it');
+                                  tab.click();
+                                } else {
+                                  console.log('Waiting for notifications tab to render...');
+                                  setTimeout(tryClick, 300);
+                                }
+                              };
+                              tryClick();
+                            }, 1000); // Using the slightly longer initial delay from mobile
+
+                            // Close dropdown *after* navigation logic starts
+                            setTimeout(() => {
+                              setNotificationDropdownOpen(false);
+                            }, 300);
+                            // --- END: UPDATED LOGIC ---
                           }}
                           className="text-sm text-green-600 hover:text-green-700 font-semibold"
                         >
@@ -417,7 +453,8 @@ export function Navigation({ currentPage, onPageChange }) {
                 <div className="border-t border-gray-200 my-2"></div>
               )}
               {user && (
-                <div className="relative px-4 py-2">
+                // <-- FIX: 3. Added ref to this wrapper div
+                <div ref={mobileNotificationRef} className="relative px-4 py-2"> 
                   <button
                     onClick={() => setNotificationDropdownOpen(!notificationDropdownOpen)}
                     className="flex items-center gap-3 w-full px-3 py-3 rounded-lg font-bold text-sm text-gray-700 hover:bg-gray-100 transition-all"
@@ -433,31 +470,39 @@ export function Navigation({ currentPage, onPageChange }) {
                   
                   {/* Mobile Notification Dropdown */}
                   {notificationDropdownOpen && (
-                    <div className="mt-2 ml-8 bg-white border border-gray-200 rounded-xl shadow-xl z-50 max-h-80 overflow-y-auto">
-                      <div className="p-3 border-b border-gray-200">
+                    <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-[90%] max-w-sm bg-white border border-gray-200 rounded-xl shadow-xl z-50 max-h-80 overflow-hidden flex flex-col">
+                      {/* Header with Mark All as Read - NOT scrollable */}
+                      <div className="p-3 border-b border-gray-200 flex-shrink-0">
                         <div className="flex items-center justify-between">
                           <h3 className="font-bold text-gray-900 text-sm">Notifications</h3>
-                          <div className="flex gap-2">
-                            {unreadNotifications > 0 && (
-                              <button
-                                onClick={async () => {
-                                  try {
-                                    await notificationAPI.markAllAsRead();
-                                    fetchUnreadNotifications();
-                                  } catch (error) {
-                                    console.error('Error marking all as read:', error);
-                                  }
-                                }}
-                                className="text-xs text-green-600 hover:text-green-700 font-semibold"
-                              >
-                                Mark all as read
-                              </button>
-                            )}
-                          </div>
+                          {unreadNotifications > 0 && (
+                            <button
+                              onClick={async (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log('Mark all as read clicked (mobile)');
+                                try {
+                                  await notificationAPI.markAllAsRead();
+                                  await fetchUnreadNotifications();
+
+                                  // ✅ small delay to ensure dropdown updates visually before closing
+                                  setTimeout(() => {
+                                    setNotificationDropdownOpen(false);
+                                  }, 300);
+                                } catch (error) {
+                                  console.error('Error marking all as read:', error);
+                                }
+                              }}
+                              className="text-xs text-green-600 hover:text-green-700 font-semibold px-3 py-2 hover:bg-green-50 rounded transition-colors"
+                            >
+                              Mark all as read
+                            </button>
+                          )}
                         </div>
                       </div>
                       
-                      <div className="max-h-48 overflow-y-auto">
+                      {/* Scrollable notification list */}
+                      <div className="flex-1 overflow-y-auto max-h-48">
                         {notifications.length === 0 ? (
                           <div className="p-4 text-center text-gray-500">
                             <Bell className="w-6 h-6 mx-auto mb-2 text-gray-300" />
@@ -512,32 +557,50 @@ export function Navigation({ currentPage, onPageChange }) {
                         )}
                       </div>
                       
+                      {/* Footer with View All - NOT scrollable */}
                       {notifications.length > 0 && (
-                        <div className="p-3 border-t border-gray-200 text-center">
+                        <div className="p-3 border-t border-gray-200 text-center flex-shrink-0 bg-white">
                           <button
-                            onClick={() => {
-                              setNotificationDropdownOpen(false);
-                              setMobileMenuOpen(false);
-                              // Navigate to dashboard notifications tab
-                              if (user.role === 'admin') {
-                                onPageChange('admin-dashboard');
-                              } else if (user.role === 'partner') {
-                                onPageChange('partner-dashboard');
-                              } else {
-                                onPageChange('dashboard');
-                              }
-                              // Trigger notifications tab after navigation
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              console.log('View all notifications clicked (mobile)');
+
+                              const dashboardPage = user.role === 'admin' ? 'admin-dashboard' :
+                                                    user.role === 'partner' ? 'partner-dashboard' :
+                                                    'dashboard';
+
+                              // Navigate first, but delay closing so logic executes
+                              onPageChange(dashboardPage);
+
                               setTimeout(() => {
-                                const notificationsTab = document.querySelector('[data-tab="notifications"]');
-                                if (notificationsTab) {
-                                  notificationsTab.click();
-                                }
-                              }, 100);
+                                // Robust looped check so it waits until dashboard renders
+                                const tryClick = () => {
+                                  const tab = document.querySelector('[data-tab="notifications"]') ||
+                                              document.querySelector('button[data-tab="notifications"]') ||
+                                              document.querySelector('[role="tab"][data-value="notifications"]');
+                                  if (tab) {
+                                    console.log('Notifications tab found, clicking it');
+                                    tab.click();
+                                  } else {
+                                    console.log('Waiting for notifications tab to render...');
+                                    setTimeout(tryClick, 300);
+                                  }
+                                };
+                                tryClick();
+                              }, 700);
+
+                              // ✅ Close dropdown *after* navigation logic starts
+                              setTimeout(() => {
+                                setNotificationDropdownOpen(false);
+                                setMobileMenuOpen(false);
+                              }, 300);
                             }}
-                            className="text-sm text-green-600 hover:text-green-700 font-semibold"
+                            className="text-sm text-green-600 hover:text-green-700 font-semibold w-full py-2 hover:bg-green-50 rounded-lg transition-colors"
                           >
                             View all notifications
                           </button>
+
                         </div>
                       )}
                     </div>
